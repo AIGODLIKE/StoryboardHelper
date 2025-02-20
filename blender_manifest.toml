@@ -1,0 +1,11 @@
+schema_version = "1.0.0"
+
+blender_version_min = "4.2.0"
+id = "Storyboard"
+license = ["SPDX:GPL-3.0-or-later", ]
+maintainer = "AIGODLIKE Community: 小萌新,卷纸"
+name = "Storyboard"
+tagline = "Storyboard"
+type = "add-on"
+version = "1.0.0"
+tags = ["3D View", "Modeling", "Mesh", "Object"]

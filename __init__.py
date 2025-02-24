@@ -1,3 +1,5 @@
+from . import ui, preferences, ops
+
 bl_info = {
     "name": "Storyboard",
     "author": "AIGODLIKE Community: 小萌新,卷纸",
@@ -10,6 +12,8 @@ bl_info = {
 
 mods = [
     preferences,
+    ops,
+    ui,
 ]
 
 

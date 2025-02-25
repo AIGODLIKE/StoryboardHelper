@@ -1,9 +1,11 @@
 import bpy
 
+from ..utils import get_pref, get_active_timeline_marker
 
-class StoryboardPanel(bpy.types.Panel):
-    bl_idname = "STORYBOARD_PT_PANEL"
-    bl_label = "Storyboard"
+
+class StoryboardTimelineMarkerPanel(bpy.types.Panel):
+    bl_idname = "STORYBOARD_TIMELINEMARKER_PT_PANEL"
+    bl_label = "Timeline Marker"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Storyboard"
@@ -11,9 +13,10 @@ class StoryboardPanel(bpy.types.Panel):
 
     def draw(self, context):
         from .ui_list import Storyboard_ULList
-        from ..ops.crud import AddTimelineMarker, DeleteTimelineMarker, SortTimelineMarkers
+        from ..ops.crud import AddTimelineMarker, DeleteTimelineMarker, RenameTimelineMarkers
+        from ..ops.rename import WM_OT_batch_rename
 
-        scene = context.scene
+        pref = get_pref()
 
         column = self.layout.column(align=True)
 
@@ -26,16 +29,44 @@ class StoryboardPanel(bpy.types.Panel):
         sub_column = row.column(align=True)
         sub_column.operator(AddTimelineMarker.bl_idname, icon="ADD", text="")
         sub_column.operator(DeleteTimelineMarker.bl_idname, icon="REMOVE", text="")
-        sub_column.operator(SortTimelineMarkers.bl_idname, icon="SORTSIZE", text="")
+        sub_column.operator(RenameTimelineMarkers.bl_idname, icon="SORTSIZE", text="")
+        sub_column.prop(pref, "sync_timeline_markers_frame", text="", icon="UV_SYNC_SELECT")
+        sub_column.prop(pref, "sync_timeline_markers_select", text="", icon="RESTRICT_SELECT_OFF")
 
-        if -1 < scene.timeline_markers_index < len(scene.timeline_markers):
-            active = scene.timeline_markers[scene.timeline_markers_index]
+        sub_column.separator()
+        sub_column.operator(
+            WM_OT_batch_rename.bl_idname,
+            text="",
+            icon="SORTALPHA",
+        ).data_type = "TIMELINE_MARKERS"
+
+        row = column.row(align=True)
+        row.operator("screen.keyframe_jump", text="", icon="PREV_KEYFRAME").next = False
+        row.operator("screen.keyframe_jump", text="", icon="NEXT_KEYFRAME").next = True
+
+        active = get_active_timeline_marker(context)
+        if active is not None:
             column.prop(active, "name")
             column.prop(active, "notes")
 
 
+class StoryboardRenderPanel(bpy.types.Panel):
+    bl_idname = "STORYBOARD_RENDER_PT_PANEL"
+    bl_label = "Render Out"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_category = "Storyboard"
+    bl_options = set()
+
+    def draw(self, context):
+        pref = get_pref()
+
+        column = self.layout.column(align=True)
+
+
 panel_list = [
-    StoryboardPanel,
+    StoryboardTimelineMarkerPanel,
+    StoryboardRenderPanel,
 ]
 register, unregister = bpy.utils.register_classes_factory(panel_list)
 

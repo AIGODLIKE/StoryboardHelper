@@ -19,3 +19,14 @@ TypeError: bpy_struct: item.attr = val: enum "a" not found in ('DEFAULT', 'en_US
     except TypeError as e:
         matches = re.findall(r'\(([^()]*)\)', e.args[-1])
         return ast.literal_eval(f"({matches[-1]})")
+
+
+def get_sort_timeline_markers(context: bpy.types.Context) -> list:
+    return sorted(context.scene.timeline_markers, key=lambda m: m.frame)
+
+
+def get_active_timeline_marker(context: bpy.types.Context) -> "bpy.types.TimelineMarker|None":
+    scene = context.scene
+    if -1 < scene.timeline_markers_index < len(scene.timeline_markers):
+        return scene.timeline_markers[scene.timeline_markers_index]
+    return None

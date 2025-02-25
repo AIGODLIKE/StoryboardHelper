@@ -1,8 +1,102 @@
+from __future__ import annotations
+
+import bpy
+from bpy.app.translations import (
+    pgettext_iface as iface_,
+    pgettext_rpt as rpt_,
+    contexts as i18n_contexts,
+)
+from bpy.props import (
+    BoolProperty,
+    CollectionProperty,
+    EnumProperty,
+    StringProperty,
+)
+from bpy.types import (
+    Operator,
+)
+
+
+class BatchRenameAction(bpy.types.PropertyGroup):
+    # category: StringProperty()
+    type: EnumProperty(
+        name="Operation",
+        items=(
+            ('REPLACE', "Find/Replace", "Replace text in the name"),
+            ('SET', "Set Name", "Set a new name or prefix/suffix the existing one"),
+            ('STRIP', "Strip Characters", "Strip leading/trailing text from the name"),
+            ('CASE', "Change Case", "Change case of each name"),
+        ),
+    )
+
+    # We could split these into sub-properties, however it's not so important.
+
+    # Used when `type == 'SET'`.
+    set_name: StringProperty(name="Name")
+    set_method: EnumProperty(
+        name="Method",
+        items=(
+            ('NEW', "New", ""),
+            ('PREFIX', "Prefix", ""),
+            ('SUFFIX', "Suffix", ""),
+        ),
+        default='SUFFIX',
+    )
+
+    # Used when `type == 'STRIP'`.
+    strip_chars: EnumProperty(
+        name="Strip Characters",
+        translation_context=i18n_contexts.id_text,
+        options={'ENUM_FLAG'},
+        items=(
+            ('SPACE', "Spaces", ""),
+            ('DIGIT', "Digits", ""),
+            ('PUNCT', "Punctuation", ""),
+        ),
+    )
+
+    # Used when `type == 'STRIP'`.
+    strip_part: EnumProperty(
+        name="Strip Part",
+        options={'ENUM_FLAG'},
+        items=(
+            ('START', "Start", ""),
+            ('END', "End", ""),
+        ),
+    )
+
+    # Used when `type == 'REPLACE'`.
+    replace_src: StringProperty(name="Find")
+    replace_dst: StringProperty(name="Replace")
+    replace_match_case: BoolProperty(name="Case Sensitive")
+    use_replace_regex_src: BoolProperty(
+        name="Regular Expression Find",
+        description="Use regular expressions to match text in the 'Find' field",
+    )
+    use_replace_regex_dst: BoolProperty(
+        name="Regular Expression Replace",
+        description="Use regular expression for the replacement text (supporting groups)",
+    )
+
+    # Used when `type == 'CASE'`.
+    case_method: EnumProperty(
+        name="Case",
+        items=(
+            ('UPPER', "Upper Case", ""),
+            ('LOWER', "Lower Case", ""),
+            ('TITLE', "Title Case", ""),
+        ),
+    )
+
+    # Weak, add/remove as properties.
+    op_add: BoolProperty(name="Add", translation_context=i18n_contexts.operator_default)
+    op_remove: BoolProperty(name="Remove", translation_context=i18n_contexts.operator_default)
+
 
 class WM_OT_batch_rename(Operator):
     """Rename multiple items at once"""
 
-    bl_idname = "wm.batch_rename"
+    bl_idname = "wm.batch_rename_storyboard"
     bl_label = "Batch Rename"
 
     bl_options = {'UNDO'}
@@ -35,6 +129,7 @@ class WM_OT_batch_rename(Operator):
             None,
             ('SCENE', "Scenes", "", 'SCENE_DATA', 18),
             ('BRUSH', "Brushes", "", 'BRUSH_DATA', 19),
+            ('TIMELINE_MARKERS', "Timeline Markers", "", 'MARKER_HLT', 20),
         ),
         translation_context=i18n_contexts.id_id,
         description="Type of data to rename",
@@ -269,6 +364,16 @@ class WM_OT_batch_rename(Operator):
                     ),
                     "name",
                     iface_("Brush(es)"),
+                )
+            elif data_type == 'TIMELINE_MARKERS':
+                data = (
+                    (
+                        [item for item in context.scene.timeline_markers if item.select]
+                        if only_selected else
+                        [item for item in context.scene.timeline_markers]
+                    ),
+                    "name",
+                    iface_("Timeline Marker(s)"),
                 )
             elif data_type in object_data_type_attrs_map.keys():
                 attr, descr, ty = object_data_type_attrs_map[data_type]
@@ -567,4 +672,3 @@ class WM_OT_batch_rename(Operator):
             self.actions.add()
         wm = context.window_manager
         return wm.invoke_props_dialog(self, width=400)
-

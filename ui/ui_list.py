@@ -10,6 +10,13 @@ class Storyboard_ULList(bpy.types.UIList):
         row.prop(item, "frame")
         row.prop(item, "select", text="", icon="RESTRICT_SELECT_OFF" if item.select else "RESTRICT_SELECT_ON")
 
+    def filter_items(self, context, data, propname):
+        items = getattr(data, propname).values()
+        sort = sorted(items, key=lambda x: x.frame)
+        flt_neworder = [sort.index(i) for i in items]
+
+        return [self.bitflag_filter_item] * len(items), flt_neworder
+
 
 ui_list = [
     Storyboard_ULList,

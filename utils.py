@@ -30,3 +30,17 @@ def get_active_timeline_marker(context: bpy.types.Context) -> "bpy.types.Timelin
     if -1 < scene.timeline_markers_index < len(scene.timeline_markers):
         return scene.timeline_markers[scene.timeline_markers_index]
     return None
+
+
+def get_scene_gp_all_frames(context: bpy.types.Conntext) -> "list[int]":
+    frames = []
+
+    for obj in context.scene.objects:
+        is_show = (obj.hide_viewport is False) and (obj.hide_get() is False)
+
+        if is_show and obj.obj.type in ("GREASEPENCIL", "GPENCIL") and obj.data:
+            for layer in obj.data.layers:
+                for frame in layer.frames:
+                    frames.add(frame.frame_number)
+
+    return list(sorted(frames))

@@ -6,7 +6,7 @@ class Storyboard_ULList(bpy.types.UIList):
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
         row = layout.row(align=True)
-        row.label(text=item.name, translate=False)
+        row.prop(item, "name", translate=False, toggle=False, text="", emboss=False)
         row.prop(item, "frame")
         row.prop(item, "select", text="", icon="RESTRICT_SELECT_OFF" if item.select else "RESTRICT_SELECT_ON")
 

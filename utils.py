@@ -26,9 +26,10 @@ def get_sort_timeline_markers(context: bpy.types.Context) -> list:
 
 
 def get_active_timeline_marker(context: bpy.types.Context) -> "bpy.types.TimelineMarker|None":
+    index = get_pref().timeline_markers_index
     scene = context.scene
-    if -1 < scene.timeline_markers_index < len(scene.timeline_markers):
-        return scene.timeline_markers[scene.timeline_markers_index]
+    if -1 < index < len(scene.timeline_markers):
+        return scene.timeline_markers[index]
     return None
 
 

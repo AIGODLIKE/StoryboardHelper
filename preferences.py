@@ -1,6 +1,7 @@
 import bpy
 
 from .ui.panel import refresh_panel
+from .update import update_timeline_markers_index
 
 
 class StoryboardPreferences(bpy.types.AddonPreferences):
@@ -18,6 +19,10 @@ class StoryboardPreferences(bpy.types.AddonPreferences):
         default=0.005,
         max=1
     )
+
+    timeline_markers_index: bpy.props.IntProperty(name="Timeline Markers Index", default=-1,
+                                                  update=lambda self, context: update_timeline_markers_index()
+                                                  )
 
     def draw(self, context):
         column = self.layout.column(align=True)

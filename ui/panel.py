@@ -24,7 +24,7 @@ class StoryboardTimelineMarkerPanel(bpy.types.Panel):
         row.template_list(
             Storyboard_ULList.bl_idname, "",
             context.scene, "timeline_markers",
-            context.scene, "timeline_markers_index"
+            pref, "timeline_markers_index"
         )
         sub_column = row.column(align=True)
         sub_column.operator(AddTimelineMarker.bl_idname, icon="ADD", text="")

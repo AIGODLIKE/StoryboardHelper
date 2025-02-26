@@ -22,8 +22,6 @@ class StoryboardPreferences(bpy.types.AddonPreferences):
     def draw(self, context):
         column = self.layout.column(align=True)
         column.prop(self, "panel_name")
-        column.prop(self, "render_file_prefix")
-        column.prop(self, "render_file_suffix")
         column.separator()
         column.prop(self, "sync_timeline_markers_frame")
         column.prop(self, "sync_timeline_markers_select")

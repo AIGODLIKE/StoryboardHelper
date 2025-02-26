@@ -3,7 +3,7 @@ import bpy
 from .ui.panel import refresh_panel
 
 
-class Preferences(bpy.types.AddonPreferences):
+class StoryboardPreferences(bpy.types.AddonPreferences):
     bl_idname = __package__
     panel_name: bpy.props.StringProperty(name="Panel Name", default="Storyboard",
                                          update=lambda self, context: refresh_panel())
@@ -32,8 +32,8 @@ class Preferences(bpy.types.AddonPreferences):
 
 
 def register():
-    bpy.utils.register_class(Preferences)
+    bpy.utils.register_class(StoryboardPreferences)
 
 
 def unregister():
-    bpy.utils.unregister_class(Preferences)
+    bpy.utils.unregister_class(StoryboardPreferences)

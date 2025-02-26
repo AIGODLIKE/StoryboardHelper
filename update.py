@@ -20,13 +20,16 @@ def update_timeline_markers_index():
                 m.select = m == marker
 
 
+bpy.msgbus.subscribe_rna(
+    key=(bpy.types.Scene, "timeline_markers_index"),
+    owner=owner,
+    args=(),
+    notify=update_timeline_markers_index,
+)
+
+
 def register():
-    bpy.msgbus.subscribe_rna(
-        key=(bpy.types.Scene, "timeline_markers_index"),
-        owner=owner,
-        args=(),
-        notify=update_timeline_markers_index,
-    )
+    ...
 
 
 def unregister():

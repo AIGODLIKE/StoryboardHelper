@@ -22,6 +22,7 @@ TypeError: bpy_struct: item.attr = val: enum "a" not found in ('DEFAULT', 'en_US
 
 
 def get_sort_timeline_markers(context: bpy.types.Context) -> list:
+    """ERROR 排序出现错误"""
     return sorted(context.scene.timeline_markers, key=lambda m: m.frame)
 
 

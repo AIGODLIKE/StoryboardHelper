@@ -12,7 +12,7 @@ class RenderStoryboard(bpy.types.Operator):
     timer = None
     start_time = None
 
-    markers = []
+    markers_dict = {}
     frames = []
 
     render_data = {}  # {frame:out_name}
@@ -21,62 +21,66 @@ class RenderStoryboard(bpy.types.Operator):
     def check_timeline_markers_not_match(self) -> bool:
         miss_list = []
 
-        if len(self.markers) == 0:
+        if len(self.markers_dict) == 0:
             self.report({"ERROR"}, "未找到时间戳")
             return True
         elif len(self.frames) == 0:
             self.report({"ERROR"}, "未找到需要渲染的帧")
             return True
 
-        for mark in self.markers:
-            if mark.frame not in self.frames:
-                miss_list.append(mark)
+        for mark_frame in self.markers_dict.keys():
+            if mark_frame not in self.frames:
+                miss_list.append(self.markers_dict[mark_frame])
         is_error = len(miss_list) != 0
 
         if is_error:
-            text = bpy.app.translations.pgettext("Timeline markers are not match %s") % [m.name for m in miss_list]
+            text = bpy.app.translations.pgettext("Timeline markers are not match %s") % miss_list
             self.report({"ERROR"}, text)
 
         return is_error
 
     def init_render_date(self):
-        mf = [m.frame for m in self.markers]
         """
         [1, 10, 50, 60, 70, 80, 90, 150, 170, 190, 210, 250, 270, 280, 290, 320, 340, 350, 370, 390, 410, 430, 440, 450,
          480, 500, 520, 540, 560]
         [1, 10, 20, 30, 40, 50, 60, 70, 75, 80, 85, 90, 95, 100, 105, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200,
          210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 375, 380, 385, 390, 395,
          400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540, 550, 560, 565, 570, 575]"""
-        for index, mark in enumerate(self.markers):
+        markers_sort_list = sorted(self.markers_dict.keys())
+        print("markers_sort_list", markers_sort_list)
 
-            if len(self.frames) == 0:
-                return
-            frame = self.frames.pop(0)
+        zfill_count = 2
+
+        if len(markers_sort_list) == 1:
+            mark_name = self.markers_dict[markers_sort_list[0]]
+            for index, frame in self.frames:
+                suffix = f"{index + 1}".zfill(zfill_count)
+                self.render_data[frame] = f"{mark_name}_{suffix}"
+
+        a_m_f = markers_sort_list.pop(0)
+        b_m_f = markers_sort_list.pop(0)
+        while len(markers_sort_list):
             count = 1
+            while self.frames:
+                frame = self.frames[0]
 
-            def add_frame(c: int, f: int):
-                suffix = f"{c}".zfill(2)
-                self.render_data[frame] = f"{mark.name}_{suffix}"
-                return c + 1
+                marker_name = self.markers_dict[a_m_f]
 
-            # print("mark", mark.frame, frame)
+                suffix = f"{count}".zfill(zfill_count)
+                out_name = f"{marker_name}_{suffix}"
 
-            if mark.frame == frame:
-                add_frame(count, frame)
-                if self.frames:
-                    frame = self.frames[0]
-                else:
-                    return
-            else:
-                self.report({"WARNING"}, "初始化数据错误")
-                return
-
-            while frame not in mf:
-                count = add_frame(count, frame)
-                if len(self.frames) == 0 or self.frames[0] in mf:
+                if frame == a_m_f:  # 是当前时间戳
+                    self.render_data[frame] = out_name
+                    self.frames.pop(0)
+                    count += 1
+                elif b_m_f and frame == b_m_f:
+                    a_m_f = b_m_f
+                    b_m_f = markers_sort_list.pop(0) if markers_sort_list else None
                     break
-                else:
-                    frame = self.frames.pop(0)
+                else:  # 界于两个时间戳之间
+                    self.render_data[frame] = out_name
+                    self.frames.pop(0)
+                    count += 1
 
     def execute(self, context):
         pref = get_pref()
@@ -84,7 +88,7 @@ class RenderStoryboard(bpy.types.Operator):
         self.save_data(context)
 
         self.render_data = {}
-        self.markers = get_sort_timeline_markers(context)
+        self.markers_dict = {m.frame: m.name for m in get_sort_timeline_markers(context)}
         self.frames = get_scene_gp_all_frames(context)
         self.start_time = time.time()
 
@@ -92,7 +96,7 @@ class RenderStoryboard(bpy.types.Operator):
             self.restore_date(context)
             return {"CANCELLED"}
         # print([m.frame for m in self.markers][:])
-        print("self.frames：", len(self.frames), "self.markers", len(self.markers))
+        print("self.frames：", len(self.frames), "self.markers", len(self.markers_dict))
         self.init_render_date()
         print("self.render_data", self.render_data)
 

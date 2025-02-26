@@ -47,7 +47,8 @@ class StoryboardTimelineMarkerPanel(bpy.types.Panel):
         active = get_active_timeline_marker(context)
         if active is not None:
             column.prop(active, "name")
-            column.prop(active, "notes")
+            if hasattr(active, "notes"):
+                column.prop(active, "notes")
 
 
 class StoryboardRenderPanel(bpy.types.Panel):

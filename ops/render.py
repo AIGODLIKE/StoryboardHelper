@@ -10,6 +10,8 @@ class RenderStoryboard(bpy.types.Operator):
     bl_label = "Render Storyboard"
 
     timer = None
+    start_time = None
+
     markers = []
     frames = []
 
@@ -18,6 +20,13 @@ class RenderStoryboard(bpy.types.Operator):
 
     def check_timeline_markers_not_match(self) -> bool:
         miss_list = []
+
+        if len(self.markers) == 0:
+            self.report({"ERROR"}, "未找到时间戳")
+            return True
+        elif len(self.frames) == 0:
+            self.report({"ERROR"}, "未找到需要渲染的帧")
+            return True
 
         for mark in self.markers:
             if mark.frame not in self.frames:
@@ -52,7 +61,10 @@ class RenderStoryboard(bpy.types.Operator):
 
             if mark.frame == frame:
                 add_frame(count, frame)
-                frame = self.frames[0]
+                if self.frames:
+                    frame = self.frames[0]
+                else:
+                    return
             else:
                 self.report({"WARNING"}, "初始化数据错误")
                 return
@@ -66,7 +78,9 @@ class RenderStoryboard(bpy.types.Operator):
 
     def execute(self, context):
         pref = get_pref()
+
         self.save_data(context)
+
         self.render_data = {}
         self.markers = get_sort_timeline_markers(context)
         self.frames = get_scene_gp_all_frames(context)
@@ -75,8 +89,8 @@ class RenderStoryboard(bpy.types.Operator):
         if self.check_timeline_markers_not_match():
             self.restore_date(context)
             return {"CANCELLED"}
-        print([m.frame for m in self.markers][:])
-        print(self.frames)
+        # print([m.frame for m in self.markers][:])
+        print("self.frames：", len(self.frames), "self.markers", len(self.markers))
         self.init_render_date()
         print("self.render_data", self.render_data)
 

@@ -67,6 +67,7 @@ class RenderStoryboard(bpy.types.Operator):
     def execute(self, context):
         pref = get_pref()
         self.save_data(context)
+        self.render_data = {}
         self.markers = get_sort_timeline_markers(context)
         self.frames = get_scene_gp_all_frames(context)
         self.start_time = time.time()
@@ -111,7 +112,7 @@ class RenderStoryboard(bpy.types.Operator):
                     context.scene.frame_set(frame)
             else:
                 self.stop(context)
-                self.rport({"INFO"}, f"Render complete {(time.time() - self.start_time):.f2}s")
+                self.report({"INFO"}, f"Render complete {time.time() - self.start_time}s")
                 return {"FINISHED"}
         return {"RUNNING_MODAL"}
 

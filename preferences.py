@@ -14,7 +14,9 @@ class Preferences(bpy.types.AddonPreferences):
     delay: bpy.props.FloatProperty(
         name="Capture Delay",
         description="How much time to wait (seconds) before capturing each frame, to allow the viewport to clean up",
-        default=0.4
+        min=0.001,
+        default=0.005,
+        max=1
     )
 
     def draw(self, context):

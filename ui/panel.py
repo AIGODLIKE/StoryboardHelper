@@ -64,8 +64,8 @@ class StoryboardRenderPanel(bpy.types.Panel):
 
         column = self.layout.column(align=True)
         column.prop(pref, "delay")
-        column.operator(RenderStoryboard.bl_idname, text="Render", icon="RENDER_ANIMATION")
-        column.operator("render.opengl")
+        column.operator(RenderStoryboard.bl_idname, icon="RENDER_ANIMATION")
+        column.operator("render.opengl", icon="IMAGE_DATA")
 
 
 panel_list = [

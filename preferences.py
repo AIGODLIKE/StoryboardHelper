@@ -11,6 +11,12 @@ class Preferences(bpy.types.AddonPreferences):
     sync_timeline_markers_frame: bpy.props.BoolProperty(name="Sync Timeline Markers Frame", default=True)
     sync_timeline_markers_select: bpy.props.BoolProperty(name="Sync Timeline Markers Select", default=True)
 
+    delay: bpy.props.FloatProperty(
+        name="Capture Delay",
+        description="How much time to wait (seconds) before capturing each frame, to allow the viewport to clean up",
+        default=0.4
+    )
+
     def draw(self, context):
         column = self.layout.column(align=True)
         column.prop(self, "panel_name")
@@ -19,6 +25,8 @@ class Preferences(bpy.types.AddonPreferences):
         column.separator()
         column.prop(self, "sync_timeline_markers_frame")
         column.prop(self, "sync_timeline_markers_select")
+        column.separator()
+        column.prop(self, "delay")
 
 
 def register():

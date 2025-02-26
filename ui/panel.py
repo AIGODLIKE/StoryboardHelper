@@ -59,9 +59,13 @@ class StoryboardRenderPanel(bpy.types.Panel):
     bl_options = set()
 
     def draw(self, context):
+        from ..ops.render import RenderStoryboard
         pref = get_pref()
 
         column = self.layout.column(align=True)
+        column.prop(pref, "delay")
+        column.operator(RenderStoryboard.bl_idname, text="Render", icon="RENDER_ANIMATION")
+        column.operator("render.opengl")
 
 
 panel_list = [

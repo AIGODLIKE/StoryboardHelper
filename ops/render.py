@@ -49,6 +49,8 @@ class RenderStoryboard(bpy.types.Operator):
          400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540, 550, 560, 565, 570, 575]"""
         for index, mark in enumerate(self.markers):
 
+            if len(self.frames) == 0:
+                return
             frame = self.frames.pop(0)
             count = 1
 

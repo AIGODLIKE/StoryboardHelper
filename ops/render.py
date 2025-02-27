@@ -116,7 +116,7 @@ class RenderStoryboard(bpy.types.Operator):
                 break
 
             row = column.row(align=True)
-            row.label(text=str(index))
+            # row.label(text=str(index))
             row.label(text=str(self.get_out_file_path(context, frame)))
 
     def invoke(self, context, event):

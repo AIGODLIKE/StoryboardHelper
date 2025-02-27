@@ -59,7 +59,7 @@ class RenderStoryboard(bpy.types.Operator):
 
         a_m_f = markers_sort_list.pop(0)
         b_m_f = markers_sort_list.pop(0)
-        while len(markers_sort_list):
+        while True:
             count = 1
             while self.frames:
                 frame = self.frames[0]
@@ -81,6 +81,8 @@ class RenderStoryboard(bpy.types.Operator):
                     self.render_data[frame] = out_name
                     self.frames.pop(0)
                     count += 1
+            if not self.frames:
+                return
 
     def execute(self, context):
         pref = get_pref()
@@ -96,11 +98,12 @@ class RenderStoryboard(bpy.types.Operator):
             self.restore_date(context)
             return {"CANCELLED"}
         # print([m.frame for m in self.markers][:])
+        print("frames", self.frames)
         print("self.frames：", len(self.frames), "self.markers", len(self.markers_dict))
         self.init_render_date()
         print("self.render_data", self.render_data)
 
-        # return {"CANCELLED"}
+        return {"CANCELLED"}
 
         wm = context.window_manager
         self.timer = wm.event_timer_add(pref.delay, window=context.window)

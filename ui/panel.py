@@ -64,6 +64,7 @@ class StoryboardRenderPanel(bpy.types.Panel):
         pref = get_pref()
 
         column = self.layout.column(align=True)
+        column.prop(context.scene.render, "filepath")
         column.prop(pref, "delay")
         column.operator(RenderStoryboard.bl_idname, icon="RENDER_ANIMATION")
         column.operator("render.opengl", icon="IMAGE_DATA")

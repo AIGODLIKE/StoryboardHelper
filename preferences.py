@@ -23,6 +23,10 @@ class StoryboardPreferences(bpy.types.AddonPreferences):
     timeline_markers_index: bpy.props.IntProperty(name="Timeline Markers Index", default=-1,
                                                   update=lambda self, context: update_timeline_markers_index()
                                                   )
+    output_file_format: bpy.props.StringProperty(
+        name="Out File Format",
+        default=r"$FOLDER\$SCENE\$NB_TM_FORMAT.$FILE_SUFFIX"
+    )
 
     def draw(self, context):
         column = self.layout.column(align=True)

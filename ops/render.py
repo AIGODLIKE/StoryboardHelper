@@ -22,6 +22,21 @@ class RenderStoryboard(bpy.types.Operator):
 
     preview_count: bpy.props.IntProperty(name="Preview Count", default=10, min=2, max=666, soft_max=20)
 
+    name_mode: bpy.props.EnumProperty(
+        items=[
+            ("REPLACE", "替换", ""),
+            ("SELECT_REPLACE", "选择替换", ""),
+        ]
+    )
+    enabled_folder: bpy.props.BoolProperty(default=True)
+    enabled_scene: bpy.props.BoolProperty(default=True)
+    enabled_view_layer: bpy.props.BoolProperty(default=True)
+    enabled_nb_tm_format: bpy.props.BoolProperty(default=True)
+    enabled_frame: bpy.props.BoolProperty(default=True)
+    enabled_frame_int: bpy.props.BoolProperty(default=True)
+    enabled_file_suffix: bpy.props.BoolProperty(default=True)
+    enabled_camera: bpy.props.BoolProperty(default=True)
+
     def check_timeline_markers_not_match(self) -> bool:
         miss_list = []
 
@@ -95,21 +110,27 @@ class RenderStoryboard(bpy.types.Operator):
         column.operator_context = "EXEC_DEFAULT"
         column.prop(self, "preview_count")
 
-        bc = column.box().column(align=True)
-        for text in [
-            "文件夹需要以\\拆分",
-            "$FOLDER -> 渲染输出的文件夹",
-            "$SCENE -> 场景名称",
-            "$VIEW_LAYER -> 视图层名称",
-            "$NB_TM_FORMAT -> F_560_01，F_560_02",
-            "$FRAME_INT -> 帧数 1,2",
-            "$FRAME -> 填充0 0001,0002",
-            "$FILE_SUFFIX -> 输出文件后缀",
-            "$CAMERA -> 当前相机名称",
-        ]:
-            bc.label(text=text)
+        column.row().prop(self, "name_mode", expand=True)
 
-        bc.label(text="Tips: 部分属性在渲染时才会改变")
+        box_column = column.box().column(align=True)
+
+        box_column.label(text="文件夹需要以\\拆分")
+        for text, prop in {
+            "文件夹 -> $FOLDER -> 渲染输出的文件夹": "enabled_folder",
+            "场景 -> $SCENE -> 场景名称": "enabled_scene",
+            "视图层 -> $VIEW_LAYER -> 视图层名称": "enabled_view_layer",
+            "格式 -> $NB_TM_FORMAT -> F_560_01，F_560_02": "enabled_nb_tm_format",
+            "帧 -> $FRAME_INT -> 帧数 1,2": "enabled_frame",
+            "填充帧 -> $FRAME -> 填充0 0001,0002": "enabled_frame_int",
+            "后缀 -> $FILE_SUFFIX -> 输出文件后缀": "enabled_file_suffix",
+            "相机 -> $CAMERA -> 当前相机名称": "enabled_camera",
+        }.items():
+            row = box_column.row(align=True)
+            row.label(text=text)
+            if self.name_mode == "SELECT_REPLACE":
+                row.prop(self, prop, text="")
+
+        box_column.label(text="Tips: 部分属性在渲染时才会改变")
         column.prop(pref, "output_file_format")
         for index, frame in enumerate(self.render_data.keys()):
             if index >= self.preview_count:
@@ -201,6 +222,8 @@ class RenderStoryboard(bpy.types.Operator):
 
     def get_out_file_path(self, context: bpy.types.Context, frame: int):
         pref = get_pref()
+        file_format = pref.output_file_format
+
         nb = self.render_data[frame]
         # frame_name = f"{frame_current}".zfill(4)
         out_path = context.scene.render.frame_path(frame=frame)
@@ -208,14 +231,35 @@ class RenderStoryboard(bpy.types.Operator):
 
         frame_str, suffix = os.path.basename(out_path).split(".")
 
-        return (pref
-                .output_file_format
-                .replace("$FOLDER", folder)
-                .replace("$SCENE", context.scene.name)
-                .replace("$VIEW_LAYER", context.view_layer.name)
-                .replace("$NB_TM_FORMAT", nb)
-                .replace("$FRAME_INT", str(frame))
-                .replace("$FRAME", frame_str)
-                .replace("$FILE_SUFFIX", suffix)
-                .replace("$CAMERA", context.scene.camera.name)
+        view_layer = context.view_layer.name
+        scene = context.scene
+        camera = context.scene.camera.name
+
+        if self.name_mode == "SELECT_REPLACE":
+            if self.enabled_folder is False:
+                file_format = file_format.replace("$FOLDER", "").replace("文件夹", "")
+            if self.enabled_scene is False:
+                file_format = file_format.replace("$SCENE", "").replace("场景", "")
+            if self.enabled_view_layer is False:
+                file_format = file_format.replace("$VIEW_LAYER", "").replace("视图层", "")
+            if self.enabled_nb_tm_format is False:
+                file_format = file_format.replace("$NB_TM_FORMAT", "").replace("格式", "")
+            if self.enabled_frame is False:
+                file_format = file_format.replace("$FRAME", "").replace("填充帧", "")
+            if self.enabled_frame_int is False:
+                file_format = file_format.replace("$FRAME_INT", str("")).replace("帧", "")
+            if self.enabled_file_suffix is False:
+                file_format = file_format.replace("$FILE_SUFFIX", "").replace("后缀", "")
+            if self.enabled_camera is False:
+                file_format = file_format.replace("$CAMERA", "").replace("相机", "")
+
+        return (file_format
+                .replace("$FOLDER", folder).replace("文件夹", folder)
+                .replace("$SCENE", scene.name).replace("场景", scene.name)
+                .replace("$VIEW_LAYER", view_layer).replace("视图层", view_layer)
+                .replace("$NB_TM_FORMAT", nb).replace("格式", nb)
+                .replace("$FRAME", frame_str).replace("填充帧", frame_str)
+                .replace("$FRAME_INT", str(frame)).replace("帧", str(frame))
+                .replace("$FILE_SUFFIX", suffix).replace("后缀", suffix)
+                .replace("$CAMERA", camera).replace("相机", camera)
                 )

@@ -25,7 +25,7 @@ class StoryboardPreferences(bpy.types.AddonPreferences):
                                                   )
     output_file_format: bpy.props.StringProperty(
         name="Out File Format",
-        default=r"$FOLDER\$SCENE\$NB_TM_FORMAT.$FILE_SUFFIX"
+        default=r"文件夹\场景\格式.后缀"
     )
 
     def draw(self, context):
@@ -36,6 +36,7 @@ class StoryboardPreferences(bpy.types.AddonPreferences):
         column.prop(self, "sync_timeline_markers_select")
         column.separator()
         column.prop(self, "delay")
+        column.prop(self, "output_file_format")
 
 
 def register():

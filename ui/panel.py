@@ -51,6 +51,26 @@ class StoryboardTimelineMarkerPanel(bpy.types.Panel):
                 column.prop(active, "notes")
 
 
+class StoryboardFCurvesPanel(bpy.types.Panel):
+    bl_idname = "STORYBOARD_FCURVES_PT_PANEL"
+    bl_label = "F Curves"
+    bl_space_type = "GRAPH_EDITOR"
+    bl_region_type = "UI"
+    bl_category = "Storyboard"
+    bl_options = set()
+
+    # "FCURVES"
+    # not found in (
+    # 'WINDOW', 'HEADER', 'CHANNELS', 'TEMPORARY', 'UI', 'TOOLS', 'TOOL_PROPS', 'ASSET_SHELF', 'ASSET_SHELF_HEADER',
+    # 'PREVIEW', 'HUD', 'NAVIGATION_BAR', 'EXECUTE', 'FOOTER', 'TOOL_HEADER', 'XR')
+    # bpy.context.area.ui_type = 'FCURVES'
+    def draw(self, context):
+        from ..ops.scale_f_curves import ScaleFCurvesStoryboard
+        layout = self.layout
+        ops = layout.operator(ScaleFCurvesStoryboard.bl_idname)
+
+
+
 class StoryboardRenderPanel(bpy.types.Panel):
     bl_idname = "STORYBOARD_RENDER_PT_PANEL"
     bl_label = "Render Out"
@@ -72,6 +92,7 @@ class StoryboardRenderPanel(bpy.types.Panel):
 
 panel_list = [
     StoryboardTimelineMarkerPanel,
+    StoryboardFCurvesPanel,
     StoryboardRenderPanel,
 ]
 register, unregister = bpy.utils.register_classes_factory(panel_list)

@@ -22,10 +22,11 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
         row = layout.row(align=True)
         row.label(text="Mode")
         row.prop(self, "mode", expand=True)
-        layout.prop(self, "scale_factor")
         row = layout.row(align=True)
-        row.prop(self, "scale_frame_range")
-        row.prop(self, "move_frame_start")
+        row.prop(self, "scale_factor")
+        row.prop(self, "scale_frame_range", icon="PREVIEW_RANGE", text="")
+
+        layout.prop(self, "move_frame_start")
         if self.move_frame_start:
             layout.prop(self, "frame_move_to")
 
@@ -51,6 +52,28 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
 
         if self.scale_frame_range:
             scene.frame_end = int(scene.frame_start + frame_range * self.scale_factor)
+
+        ok_set = set()
+
+        def set_action(f_curves: bpy.types.FCurve):
+            f_curves.lock = False
+            f_curves.hide = False
+            ok_set.add(f_curves)
+            if f_curves.group:
+                for c in f_curves.group.channels:
+                    if c not in ok_set:
+                        set_action(c)
+
+        # bpy.context.object.animation_data.action.fcurves[0].lock
+        # bpy.context.object.animation_data.action.fcurves[0].group.channels[0].group hide
+        for obj in context.scene.objects:
+            anim = obj.animation_data
+            if anim:
+                action = obj.animation_data.action
+                if action:
+                    for f_c in action.fcurves:
+                        set_action(f_c)
+
         bpy.ops.graph.select_all(action="SELECT")
         bpy.ops.transform.resize("EXEC_DEFAULT", True,
                                  value=(self.scale_factor, 1, 1),

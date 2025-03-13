@@ -57,7 +57,7 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
 
         def set_action(f_curves: bpy.types.FCurve):
             f_curves.lock = False
-            f_curves.hide = False
+            setattr(f_curves, "hide", False)
             ok_set.add(f_curves)
             if f_curves.group:
                 for c in f_curves.group.channels:
@@ -73,6 +73,11 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
                 if action:
                     for f_c in action.fcurves:
                         set_action(f_c)
+                    if action.groups:
+                        for g in action.groups:
+                            g.lock = False
+                            for f_c in g.channels:
+                                set_action(f_c)
 
         bpy.ops.graph.select_all(action="SELECT")
         bpy.ops.transform.resize("EXEC_DEFAULT", True,

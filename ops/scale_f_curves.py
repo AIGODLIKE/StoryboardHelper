@@ -7,7 +7,7 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
     bl_description = ""
 
     move_frame_start: bpy.props.BoolProperty(name="Move Frame Range", default=True)
-    frame_start: bpy.props.IntProperty(name="Frame Start", default=0)
+    frame_move_to: bpy.props.IntProperty(name="Frame Move to", default=0)
     scale_factor: bpy.props.FloatProperty(name="Scale Factor", default=1)
     scale_frame_range: bpy.props.BoolProperty(name="Scale Frame Range")
     mode: bpy.props.EnumProperty(name="Mode", items=[
@@ -30,33 +30,41 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
     def invoke(self, context, event):
         bpy.ops.ed.undo_push(message="Push Undo")
 
-        self.frame_start = context.scene.frame_start
+        self.frame_move_to = context.scene.frame_start
         wm = context.window_manager
         return wm.invoke_props_dialog(self, width=400)
 
     def execute(self, context):
-        context.space_data.pivot_point = "CURSOR"
-        context.scene.frame_current = context.scene.frame_start
+        space = context.space_data
+        space.pivot_point = "CURSOR"
 
+        space.dopesheet.show_only_selected = self.mode == "ONLY_SELECTED"
+        space.dopesheet.show_hidden = True
+        space.dopesheet.show_only_errors = False
+
+        scene = context.scene
+        scene.tool_settings.use_snap_anim = False
+        scene.frame_current = scene.frame_start
+        frame_range = scene.frame_start - scene.frame_end
+
+        if self.scale_frame_range:
+            scene.frame_end = int(scene.frame_start + frame_range * self.scale_factor)
         bpy.ops.graph.select_all(action="SELECT")
         bpy.ops.transform.resize("EXEC_DEFAULT", True,
-                                 value=(self.scale_factor, 1, 1), orient_type='GLOBAL',
+                                 value=(self.scale_factor, 1, 1),
+                                 orient_type='GLOBAL',
                                  proportional_edit_falloff='SMOOTH',
                                  )
-        # bpy.ops.transform.translate(value=(161.701, 14.9488, 0), orient_type='GLOBAL',
-        #                             orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL',
-        #                             mirror=False, use_proportional_edit=False, proportional_edit_falloff='SMOOTH',
-        #                             proportional_size=300, use_proportional_connected=False,
-        #                             use_proportional_projected=False, snap=True, snap_elements={'VERTEX'},
-        #                             use_snap_project=False, snap_target='CLOSEST', use_snap_self=True,
-        #                             use_snap_edit=True, use_snap_nonedit=True, use_snap_selectable=False)
-        # bpy.ops.transform.translate(value=(-395.361, -0, -0), orient_type='GLOBAL',
-        #                             orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL',
-        #                             constraint_axis=(True, False, False), mirror=False, use_proportional_edit=False,
-        #                             proportional_edit_falloff='SMOOTH', proportional_size=300,
-        #                             use_proportional_connected=False, use_proportional_projected=False, snap=True,
-        #                             snap_elements={'VERTEX'}, use_snap_project=False, snap_target='CLOSEST',
-        #                             use_snap_self=True, use_snap_edit=True, use_snap_nonedit=True,
-        #                             use_snap_selectable=False)
+        if self.move_frame_start:
+            move = self.frame_move_to - self.scene.frame_start
+
+            scene.frame_start += move
+            scene.frame_end += move
+            
+            bpy.ops.transform.translate(
+                value=(move, -0, -0),
+                orient_type='GLOBAL',
+                proportional_edit_falloff='SMOOTH',
+            )
 
         return {"FINISHED"}

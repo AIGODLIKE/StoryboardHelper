@@ -7,9 +7,11 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
     bl_description = ""
 
     move_frame_start: bpy.props.BoolProperty(name="Move Frame Range", default=True)
+    scale_frame_range: bpy.props.BoolProperty(name="Scale Frame Range", default=True)
+
     frame_move_to: bpy.props.IntProperty(name="Frame Move to", default=0)
     scale_factor: bpy.props.FloatProperty(name="Scale Factor", default=1)
-    scale_frame_range: bpy.props.BoolProperty(name="Scale Frame Range")
+
     mode: bpy.props.EnumProperty(name="Mode", items=[
         ("ALL", "All", ""),
         ("ONLY_SELECTED", "Only Selected", ""),
@@ -25,7 +27,7 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
         row.prop(self, "scale_frame_range")
         row.prop(self, "move_frame_start")
         if self.move_frame_start:
-            layout.prop(self, "frame_start")
+            layout.prop(self, "frame_move_to")
 
     def invoke(self, context, event):
         bpy.ops.ed.undo_push(message="Push Undo")
@@ -45,7 +47,7 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
         scene = context.scene
         scene.tool_settings.use_snap_anim = False
         scene.frame_current = scene.frame_start
-        frame_range = scene.frame_start - scene.frame_end
+        frame_range = scene.frame_end - scene.frame_start
 
         if self.scale_frame_range:
             scene.frame_end = int(scene.frame_start + frame_range * self.scale_factor)
@@ -56,15 +58,16 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
                                  proportional_edit_falloff='SMOOTH',
                                  )
         if self.move_frame_start:
-            move = self.frame_move_to - self.scene.frame_start
+            move = self.frame_move_to - scene.frame_start
 
-            scene.frame_start += move
-            scene.frame_end += move
-            
             bpy.ops.transform.translate(
                 value=(move, -0, -0),
                 orient_type='GLOBAL',
                 proportional_edit_falloff='SMOOTH',
             )
+            print("move", move)
+            scene.frame_start += move
+            scene.frame_end += move
 
+        scene.frame_current = scene.frame_start
         return {"FINISHED"}

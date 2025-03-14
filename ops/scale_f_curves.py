@@ -64,8 +64,6 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
                     if c not in ok_set:
                         set_action(c)
 
-        # bpy.context.object.animation_data.action.fcurves[0].lock
-        # bpy.context.object.animation_data.action.fcurves[0].group.channels[0].group hide
         for obj in context.scene.objects:
             anim = obj.animation_data
             if anim:
@@ -94,7 +92,6 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
                 orient_type='GLOBAL',
                 proportional_edit_falloff='SMOOTH',
             )
-            print("move", move)
             scene.frame_start += move
             scene.frame_end += move
 

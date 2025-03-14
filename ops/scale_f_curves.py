@@ -46,7 +46,7 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
         space.dopesheet.show_only_errors = False
 
         scene = context.scene
-        scene.tool_settings.use_snap_anim = False
+        # scene.tool_settings.use_snap_anim = False
         scene.frame_current = scene.frame_start
         frame_range = scene.frame_end - scene.frame_start
 

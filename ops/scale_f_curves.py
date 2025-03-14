@@ -79,6 +79,7 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
                             for f_c in g.channels:
                                 set_action(f_c)
 
+        bpy.ops.graph.reveal(select=False)  # 显示所有通道
         bpy.ops.graph.select_all(action="SELECT")
         bpy.ops.transform.resize("EXEC_DEFAULT", True,
                                  value=(self.scale_factor, 1, 1),

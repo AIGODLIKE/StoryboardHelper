@@ -82,16 +82,31 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
         bpy.ops.transform.resize("EXEC_DEFAULT", True,
                                  value=(self.scale_factor, 1, 1),
                                  orient_type='GLOBAL',
-                                 proportional_edit_falloff='SMOOTH',
-                                 )
+                                 orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL',
+                                 constraint_axis=(True, False, False), mirror=False, use_proportional_edit=False,
+                                 proportional_edit_falloff='SMOOTH', proportional_size=300,
+                                 use_proportional_connected=False, use_proportional_projected=False, snap=True,
+                                 snap_elements={'VERTEX'}, use_snap_project=False, snap_target='CLOSEST',
+                                 use_snap_self=True, use_snap_edit=True, use_snap_nonedit=True,
+                                 use_snap_selectable=False)
+        # bpy.ops.transform.resize(
+        #     value=(self.scale_factor, 1, 1),
+        #     orient_type='GLOBAL',
+        #     proportional_edit_falloff='SMOOTH',
+        # )
         if self.move_frame_start:
             move = self.frame_move_to - scene.frame_start
-
             bpy.ops.transform.translate(
+                "EXEC_DEFAULT", True,
                 value=(move, -0, -0),
                 orient_type='GLOBAL',
-                proportional_edit_falloff='SMOOTH',
-            )
+                orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL',
+                constraint_axis=(True, False, False), mirror=False, use_proportional_edit=False,
+                proportional_edit_falloff='SMOOTH', proportional_size=300,
+                use_proportional_connected=False, use_proportional_projected=False, snap=True,
+                snap_elements={'VERTEX'}, use_snap_project=False, snap_target='CLOSEST',
+                use_snap_self=True, use_snap_edit=True, use_snap_nonedit=True,
+                use_snap_selectable=False)
             scene.frame_start += move
             scene.frame_end += move
 

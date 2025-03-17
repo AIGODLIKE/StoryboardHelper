@@ -1,4 +1,4 @@
-from . import ui, preferences, ops, update
+from . import ui, preferences, ops, update, res
 
 bl_info = {
     "name": "Storyboard",
@@ -15,6 +15,7 @@ mods = [
     update,
     ops,
     ui,
+    res,
 ]
 
 

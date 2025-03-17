@@ -161,6 +161,6 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
         self.designate_end = scene.frame_end
 
     def check(self, context):
-        if self.designate_start <= self.designate_end:
+        if self.designate_start >= self.designate_end:
             self.report({"ERROR"}, "指定的帧范围出现错误")
             return True

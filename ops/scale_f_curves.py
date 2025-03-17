@@ -122,9 +122,8 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
                 if next_kf:
                     next_f = calculation_frame(next_kf.co_ui[0])
                     if (ox - next_kf.co_ui[0]) < 0.5 and x == next_f:  # 如果缩放之后两个帧给缩到一个帧内了
-                        ...
-                        # x -= 1  # 就将帧向前移一个,避免缩放产生的重叠
-                        # print("就将帧向前移一个,避免缩放产生的重叠", next_kf, next_f, x)
+                        x -= 1  # 就将帧向前移一个,避免缩放产生的重叠
+                        print("就将帧向前移一个,避免缩放产生的重叠", next_kf, next_f, x)
 
                 if self.is_designate:  # 手动设置范围
                     if ox > self.designate_scale_end:

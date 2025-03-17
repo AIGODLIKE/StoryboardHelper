@@ -100,7 +100,9 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
 
         @cache
         def calculation_frame(frame: float) -> int:
-            return int(self.scale_axis_frame + ((frame - self.scale_axis_frame) * self.scale_factor))
+            f = int(self.scale_axis_frame + ((frame - self.scale_axis_frame) * self.scale_factor))
+            print("calculation_frame", frame, f)
+            return f
 
         calculation_frame.cache_clear()
         count = 0

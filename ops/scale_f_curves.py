@@ -33,11 +33,29 @@ def unlock(context):
     for_all_action(context, set_action)
 
 
+del_frame = 0
+
+
 def snap_to_int_frame(context):
+    global del_frame
+    del_frame = 0
+
     def snap(c_f):
-        for index, keyframe in enumerate(c_f.keyframe_points):
+        global del_frame
+        sort_frame = sorted(c_f.keyframe_points, key=lambda k: k.co_ui[0])
+        snap_keyframe = set()
+        fl = len(c_f.keyframe_points)
+        for index, keyframe in enumerate(sort_frame):
             x, y = keyframe.co_ui
-            keyframe.co_ui = Vector((int(x), y))
+            ix = int(x)
+            while True:
+                if ix not in snap_keyframe:
+                    keyframe.co_ui = Vector((ix, y))
+                    snap_keyframe.add(ix)
+                    break
+                else:
+                    ix += 1
+        del_frame += fl - len(c_f.keyframe_points)
         c_f.update()
 
     for_all_action(context, snap)
@@ -91,6 +109,7 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
         self.scale_frame(context)
         self.move_frame(context)
         snap_to_int_frame(context)
+        self.report({"INFO"}, f"缩放完成 有{del_frame}帧被删除")
         return {"FINISHED"}
 
     def move_frame(self, context):
@@ -100,13 +119,14 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
             scene = context.scene
             move = self.move_frame_to - scene.frame_start
             bpy.ops.transform.translate(
-                value=(move, -0, -0), orient_matrix_type='GLOBAL',
-                constraint_axis=(True, False, False), mirror=False, use_proportional_edit=False,
-                proportional_edit_falloff='SMOOTH', proportional_size=300,
-                use_proportional_connected=False, use_proportional_projected=False, snap=True,
-                snap_elements={'VERTEX'}, use_snap_project=False, snap_target='CLOSEST',
-                use_snap_self=True, use_snap_edit=True, use_snap_nonedit=True,
-                use_snap_selectable=False
+                value=(move, -0, -0),
+                # orient_matrix_type='GLOBAL',
+                # constraint_axis=(True, False, False), mirror=False, use_proportional_edit=False,
+                # proportional_edit_falloff='SMOOTH', proportional_size=300,
+                # use_proportional_connected=False, use_proportional_projected=False, snap=True,
+                # snap_elements={'VERTEX'}, use_snap_project=False, snap_target='CLOSEST',
+                # use_snap_self=True, use_snap_edit=True, use_snap_nonedit=True,
+                # use_snap_selectable=False
             )
             scene.frame_start += move
             scene.frame_end += move
@@ -127,14 +147,15 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
         if self.is_designate:
             self.select_designate_frame(context)
         bpy.ops.transform.resize("EXEC_DEFAULT", True,
-                                 value=(self.scale_factor, 1, 1), orient_type='GLOBAL',
-                                 orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL',
-                                 constraint_axis=(True, False, False), mirror=False, use_proportional_edit=False,
-                                 proportional_edit_falloff='SMOOTH', proportional_size=300,
-                                 use_proportional_connected=False, use_proportional_projected=False, snap=True,
-                                 snap_elements={'VERTEX'}, use_snap_project=False, snap_target='CLOSEST',
-                                 use_snap_self=True, use_snap_edit=True, use_snap_nonedit=True,
-                                 use_snap_selectable=False
+                                 value=(self.scale_factor, 1, 1),
+                                 # orient_type='GLOBAL',
+                                 # orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL',
+                                 # constraint_axis=(True, False, False), mirror=False, use_proportional_edit=False,
+                                 # proportional_edit_falloff='SMOOTH', proportional_size=300,
+                                 # use_proportional_connected=False, use_proportional_projected=False, snap=True,
+                                 # snap_elements={'VERTEX'}, use_snap_project=False, snap_target='CLOSEST',
+                                 # use_snap_self=True, use_snap_edit=True, use_snap_nonedit=True,
+                                 # use_snap_selectable=False
                                  )
 
     def select_designate_frame(self, context):
@@ -144,7 +165,8 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
             start, end = self.designate_start, self.designate_end
             for index, keyframe in enumerate(fc.keyframe_points):
                 x, y = keyframe.co_ui
-                keyframe.select_left_handle = keyframe.select_right_handle = keyframe.select_control_point = start < x < end
+                keyframe.select_control_point = start < x < end
+                keyframe.select_left_handle = keyframe.select_right_handle = False
 
         for_all_action(context, select_designate)
 
@@ -156,7 +178,7 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
         space.dopesheet.show_only_errors = False
 
         scene = context.scene
-        scene.tool_settings.use_snap_anim = True
+        # scene.tool_settings.use_snap_anim = True
         self.designate_start = scene.frame_start
         self.designate_end = scene.frame_end
 

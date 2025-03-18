@@ -78,8 +78,15 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
     designate_end: bpy.props.IntProperty(name="End", default=0)
 
     def draw(self, context):
+        from bl_ui.space_dopesheet import dopesheet_filter
+
         layout = self.layout
-        layout.prop(self, "is_designate")
+
+        row = layout.row(align=True)
+        dopesheet_filter(row, context)
+        row.separator()
+        row.prop(self, "is_designate")
+
         row = layout.row(align=True)
         row.prop(self, "scale_factor")
         if self.is_designate:
@@ -96,12 +103,13 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
 
     def invoke(self, context, event):
         # bpy.ops.ed.undo_push(message="Push Undo")
+        bpy.ops.graph.reveal(select=False)  # 显示所有通道
+        unlock(context)
         self.set_data(context)
         wm = context.window_manager
         return wm.invoke_props_dialog(self, width=400)
 
     def execute(self, context):
-        unlock(context)
         if self.check(context):
             return {"CANCELLED"}
 

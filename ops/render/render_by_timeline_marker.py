@@ -3,39 +3,17 @@ import time
 
 import bpy
 
-from ..utils import get_sort_timeline_markers, get_scene_gp_all_frames, get_pref
+from utils import get_sort_timeline_markers, get_scene_gp_all_frames, get_pref
 
 
-class RenderStoryboard(bpy.types.Operator):
-    bl_idname = "render.render_storyboard"
+class RenderStoryboardByTimelineMarker(bpy.types.Operator):
+    bl_idname = "render.render_storyboard_by_timeline_marker"
     bl_label = "Render Storyboard"
     bl_description = "Ctrl: Directly render without previewing"
 
     timer = None
     start_time = None
 
-    markers_dict = {}
-    frames = []
-
-    render_data = {}  # {frame:out_name}
-    data = {}  # store data for restore
-
-    preview_count: bpy.props.IntProperty(name="Preview Count", default=10, min=2, max=666, soft_max=20)
-
-    name_mode: bpy.props.EnumProperty(
-        items=[
-            ("REPLACE", "Replace", ""),
-            ("SELECT_REPLACE", "Select Replace", ""),
-        ]
-    )
-    enabled_folder: bpy.props.BoolProperty(default=True)
-    enabled_scene: bpy.props.BoolProperty(default=True)
-    enabled_view_layer: bpy.props.BoolProperty(default=True)
-    enabled_nb_tm_format: bpy.props.BoolProperty(default=True)
-    enabled_frame: bpy.props.BoolProperty(default=True)
-    enabled_frame_int: bpy.props.BoolProperty(default=True)
-    enabled_file_suffix: bpy.props.BoolProperty(default=True)
-    enabled_camera: bpy.props.BoolProperty(default=True)
 
     def check_timeline_markers_not_match(self) -> bool:
         miss_list = []

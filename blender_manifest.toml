@@ -1,11 +1,11 @@
 schema_version = "1.0.0"
 
 blender_version_min = "4.2.0"
-id = "Storyboard"
+id = "StoryboardHelper"
 license = ["SPDX:GPL-3.0-or-later", ]
-maintainer = "ACGGIT、小萌新、卷纸"
-name = "Storyboard"
-tagline = "Storyboard"
+maintainer = "niceboat animation、小萌新、JuanZhi、只剩一瓶辣椒酱"
+name = "Storyboard Helper"
+tagline = "Storyboard Helper"
 type = "add-on"
 version = "1.0.3"
 tags = ["3D View", "Modeling", "Mesh", "Object"]

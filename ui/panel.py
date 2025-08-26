@@ -79,13 +79,13 @@ class StoryboardRenderPanel(bpy.types.Panel):
     bl_options = set()
 
     def draw(self, context):
-        from ..ops.render import RenderStoryboard
+        from ops.render.render_by_timeline_marker import RenderStoryboardByTimelineMarker
         pref = get_pref()
 
         column = self.layout.column(align=True)
         column.prop(context.scene.render, "filepath")
         column.prop(pref, "delay")
-        column.operator(RenderStoryboard.bl_idname, icon="RENDER_ANIMATION")
+        column.operator(RenderStoryboardByTimelineMarker.bl_idname, icon="RENDER_ANIMATION")
         column.operator("render.opengl", icon="IMAGE_DATA")
 
 

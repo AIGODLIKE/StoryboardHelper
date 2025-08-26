@@ -37,5 +37,5 @@ data = {
     "The file output path is incorrect, please check!!": "文件输出路径错误,请检查!!",
     "Replace": "替换",
     "Select Replace": "选择替换",
-
+    "Render complete": "渲染完成"
 }

@@ -39,6 +39,7 @@ class RenderStoryboard(bpy.types.Operator):
 
     def check_timeline_markers_not_match(self) -> bool:
         miss_list = []
+        print("check_timeline_markers_not_match", self.markers_dict)
 
         if len(self.markers_dict) == 0:
             self.report({"ERROR"}, "Time stamp not found")
@@ -191,7 +192,8 @@ class RenderStoryboard(bpy.types.Operator):
                     context.scene.frame_set(frame)
             else:
                 self.stop(context)
-                self.report({"INFO"}, f"Render complete {time.time() - self.start_time}s")
+                text = bpy.app.translations.pgettext_iface("Render complete")
+                self.report({"INFO"}, f"{text} {time.time() - self.start_time}s")
                 return {"FINISHED"}
         return {"RUNNING_MODAL"}
 

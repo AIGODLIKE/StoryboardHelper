@@ -24,8 +24,8 @@ class RenderStoryboard(bpy.types.Operator):
 
     name_mode: bpy.props.EnumProperty(
         items=[
-            ("REPLACE", "替换", ""),
-            ("SELECT_REPLACE", "选择替换", ""),
+            ("REPLACE", "Replace", ""),
+            ("SELECT_REPLACE", "Select Replace", ""),
         ]
     )
     enabled_folder: bpy.props.BoolProperty(default=True)
@@ -66,7 +66,6 @@ class RenderStoryboard(bpy.types.Operator):
          210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 375, 380, 385, 390, 395,
          400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540, 550, 560, 565, 570, 575]"""
         markers_sort_list = sorted(self.markers_dict.keys())
-        # print("markers_sort_list", markers_sort_list)
 
         zfill_count = 2
 
@@ -151,8 +150,6 @@ class RenderStoryboard(bpy.types.Operator):
         if self.check_timeline_markers_not_match():
             self.restore_date(context)
             return {"CANCELLED"}
-        # print([m.frame for m in self.markers][:])
-        # print("frames", self.frames)
         print("self.frames：", len(self.frames), "self.markers", len(self.markers_dict))
         self.init_render_date()
         print("self.render_data", self.render_data)
@@ -162,7 +159,7 @@ class RenderStoryboard(bpy.types.Operator):
 
     def execute(self, context):
         pref = get_pref()
-        if hasattr(self, "start_time") is False:
+        if not hasattr(self, "start_time"):
             return {"CANCELLED"}
 
         wm = context.window_manager
@@ -182,14 +179,14 @@ class RenderStoryboard(bpy.types.Operator):
 
             if self.render_data:
                 if frame_current in self.render_data:
-                    # bpy.ops.screen.screenshot(filepath=out_path)
                     bpy.ops.render.opengl()
                     try:
                         if 'Render Result' in bpy.data.images:
                             bpy.data.images['Render Result'].save_render(self.get_out_file_path(context, frame_current))
                             self.render_data.pop(frame_current)
                     except RuntimeError:
-                        self.report({"ERROR"}, "文件输出路径错误,请检查！！" + get_pref().output_file_format)
+                        text = bpy.app.translations.pgettext_iface("The file output path is incorrect, please check!!")
+                        self.report({"ERROR"}, text + get_pref().output_file_format)
                         return {"CANCELLED"}
                 else:
                     frame = list(self.render_data.keys())[0]
@@ -225,7 +222,6 @@ class RenderStoryboard(bpy.types.Operator):
         file_format = pref.output_file_format
 
         nb = self.render_data[frame]
-        # frame_name = f"{frame_current}".zfill(4)
         out_path = context.scene.render.frame_path(frame=frame)
         folder = os.path.dirname(out_path)
 

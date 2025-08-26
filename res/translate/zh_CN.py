@@ -27,7 +27,15 @@ data = {
 
     "Prefix": "前缀",
     "Suffix": "后缀",
-    "Int Size":"整数大小",
-    "Preview":"预览",
-    "Preview Count":"预览数量",
+    "Int Size": "整数大小",
+    "Preview": "预览",
+    "Preview Count": "预览数量",
+
+    "Capture Delay": "捕获延迟",
+    "How much time to wait (seconds) before capturing each frame, to allow the viewport to clean up": "在捕获每一帧之前等待多长时间（秒），以允许视口清理",
+    "Out File Format": "输出文件格式",
+    "The file output path is incorrect, please check!!": "文件输出路径错误,请检查!!",
+    "Replace": "替换",
+    "Select Replace": "选择替换",
+
 }

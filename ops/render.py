@@ -134,9 +134,7 @@ class RenderStoryboard(bpy.types.Operator):
         for index, frame in enumerate(self.render_data.keys()):
             if index >= self.preview_count:
                 break
-
             row = column.row(align=True)
-            # row.label(text=str(index))
             row.label(text=str(self.get_out_file_path(context, frame)))
 
     def invoke(self, context, event):

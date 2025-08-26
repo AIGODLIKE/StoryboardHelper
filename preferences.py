@@ -25,7 +25,7 @@ class StoryboardPreferences(bpy.types.AddonPreferences):
                                                   )
     output_file_format: bpy.props.StringProperty(
         name="Out File Format",
-        default=r"文件夹\场景\格式.后缀"
+        default=r"$FOLDER\$SCENE\$NB_TM_FORMAT.$FILE_SUFFIX"
     )
 
     def draw(self, context):

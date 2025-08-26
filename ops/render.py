@@ -9,7 +9,7 @@ from ..utils import get_sort_timeline_markers, get_scene_gp_all_frames, get_pref
 class RenderStoryboard(bpy.types.Operator):
     bl_idname = "render.render_storyboard"
     bl_label = "Render Storyboard"
-    bl_description = "Ctrl :直接渲染，不预览"
+    bl_description = "Ctrl: Directly render without previewing"
 
     timer = None
     start_time = None
@@ -41,10 +41,10 @@ class RenderStoryboard(bpy.types.Operator):
         miss_list = []
 
         if len(self.markers_dict) == 0:
-            self.report({"ERROR"}, "未找到时间戳")
+            self.report({"ERROR"}, "Time stamp not found")
             return True
         elif len(self.frames) == 0:
-            self.report({"ERROR"}, "未找到需要渲染的帧")
+            self.report({"ERROR"}, "No frames found for rendering")
             return True
 
         for mark_frame in self.markers_dict.keys():

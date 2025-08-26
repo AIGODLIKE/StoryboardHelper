@@ -1,10 +1,33 @@
 data = {
     "Add Timeline Marker": "添加时间线标记",
+    "Delete Timeline Marker": "删除时间线标记",
+    "Rename Timeline Markers": "重命名时间线标记",
+    "Deleted timeline marker %s": "删除时间线标记 %s",
     "Timeline markers are not match %s": "时间线标记未匹配 %s",
-    "Render Storyboard": "渲染Storyboard",
+    "Storyboard": "故事板",
+    "Timeline Marker": "时间线标记",
+    "Render Storyboard": "渲染故事板",
+    "Ctrl: Directly render without previewing": "Ctrl :直接渲染，不预览",
+    "Time stamp not found": "未找到时间戳",
+    "No frames found for rendering": "未找到需要渲染的帧",
+
+    "Scale F Curves": "缩放F曲线",
     "Designate Scale Range": "指定缩放范围",
     "Move Frame Range": "移动帧范围",
     "Scale Frame Range": "缩放帧范围",
     "Move Frame to": "移动帧到",
-    "Scale Factor": "缩放系数"
+    "Scale Factor": "缩放系数",
+    "Scaling completed with %s frames deleted": "缩放完成 有%s帧被删除",
+    "There is an error in the specified frame range": "指定的帧范围出现错误",
+
+    "Render Out": "渲染输出",
+    "Panel Name": "面板名称",
+    "Sync Timeline Markers Frame": "同步时间线标记帧",
+    "Sync Timeline Markers Select": "同步时间线标记选择",
+
+    "Prefix": "前缀",
+    "Suffix": "后缀",
+    "Int Size":"整数大小",
+    "Preview":"预览",
+    "Preview Count":"预览数量",
 }

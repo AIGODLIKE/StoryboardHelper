@@ -96,7 +96,6 @@ class RenameTimelineMarkers(bpy.types.Operator):
         return context.window_manager.invoke_props_dialog(self, width=400)
 
     def execute(self, context):
-        scene = context.scene
         for index, marker in enumerate(get_sort_timeline_markers(context)):
             marker.name = marker_new_name(self.prefix, self.suffix, index, self.int_size)
         return {"FINISHED"}

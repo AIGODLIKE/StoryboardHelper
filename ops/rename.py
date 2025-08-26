@@ -12,9 +12,6 @@ from bpy.props import (
     EnumProperty,
     StringProperty,
 )
-from bpy.types import (
-    Operator,
-)
 
 
 class BatchRenameAction(bpy.types.PropertyGroup):
@@ -93,7 +90,7 @@ class BatchRenameAction(bpy.types.PropertyGroup):
     op_remove: BoolProperty(name="Remove", translation_context=i18n_contexts.operator_default)
 
 
-class WM_OT_batch_rename(Operator):
+class WM_OT_batch_rename(bpy.types.Operator):
     """Rename multiple items at once"""
 
     bl_idname = "wm.batch_rename_storyboard"
@@ -156,21 +153,19 @@ class WM_OT_batch_rename(Operator):
     @staticmethod
     def _selected_ids_from_outliner_by_type_for_object_data(context, ty):
         # Include selected object-data as well as the selected ID's.
-        from bpy.types import Object
         # De-duplicate the result as object-data may cause duplicates.
         return tuple(set([
             id for id_base in context.selected_ids
-            if isinstance(id := id_base.data if isinstance(id_base, Object) else id_base, ty)
+            if isinstance(id := id_base.data if isinstance(id_base, bpy.types.Object) else id_base, ty)
             if id.is_editable
         ]))
 
     @staticmethod
     def _selected_actions_from_outliner(context):
         # Actions are a special case because they can be accessed directly or via animation-data.
-        from bpy.types import Action
 
         def action_from_any_id(id_data):
-            if isinstance(id_data, Action):
+            if isinstance(id_data, bpy.types.Action):
                 return id_data
             # Not all ID's have animation data.
             if (animation_data := getattr(id_data, "animation_data", None)) is not None:

@@ -70,7 +70,6 @@ class StoryboardFCurvesPanel(bpy.types.Panel):
         ops = layout.operator(ScaleFCurvesStoryboard.bl_idname)
 
 
-
 class StoryboardRenderPanel(bpy.types.Panel):
     bl_idname = "STORYBOARD_RENDER_PT_PANEL"
     bl_label = "Render Out"
@@ -99,7 +98,7 @@ register, unregister = bpy.utils.register_classes_factory(panel_list)
 
 
 def refresh_panel():
-    unregister_class()
+    unregister()
     from ..utils import get_pref
     panel_name = get_pref().panel_name
     for panel in panel_list:

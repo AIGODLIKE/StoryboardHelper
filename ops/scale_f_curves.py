@@ -63,7 +63,7 @@ def snap_to_int_frame(context):
 
 class ScaleFCurvesStoryboard(bpy.types.Operator):
     bl_idname = "anim.scale_f_curves"
-    bl_label = "缩放F曲线"
+    bl_label = "Scale F Curves"
     bl_options = {"REGISTER", "UNDO"}
 
     is_designate: bpy.props.BoolProperty(name="Designate Scale Range", default=False)
@@ -102,7 +102,6 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
                 box.prop(self, "move_frame_to")
 
     def invoke(self, context, event):
-        # bpy.ops.ed.undo_push(message="Push Undo")
         bpy.ops.graph.reveal(select=False)  # 显示所有通道
         unlock(context)
         self.set_data(context)
@@ -117,7 +116,7 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
         self.scale_frame(context)
         self.move_frame(context)
         snap_to_int_frame(context)
-        self.report({"INFO"}, f"缩放完成 有{del_frame}帧被删除")
+        self.report({"INFO"}, "Scaling completed with %s frames deleted" % del_frame)
         return {"FINISHED"}
 
     def move_frame(self, context):
@@ -126,16 +125,7 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
         if self.is_move_frame:
             scene = context.scene
             move = self.move_frame_to - scene.frame_start
-            bpy.ops.transform.translate(
-                value=(move, -0, -0),
-                # orient_matrix_type='GLOBAL',
-                # constraint_axis=(True, False, False), mirror=False, use_proportional_edit=False,
-                # proportional_edit_falloff='SMOOTH', proportional_size=300,
-                # use_proportional_connected=False, use_proportional_projected=False, snap=True,
-                # snap_elements={'VERTEX'}, use_snap_project=False, snap_target='CLOSEST',
-                # use_snap_self=True, use_snap_edit=True, use_snap_nonedit=True,
-                # use_snap_selectable=False
-            )
+            bpy.ops.transform.translate(value=(move, -0, -0))
             scene.frame_start += move
             scene.frame_end += move
             scene.frame_current += move
@@ -154,17 +144,7 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
         bpy.ops.graph.select_all(action="SELECT")
         if self.is_designate:
             self.select_designate_frame(context)
-        bpy.ops.transform.resize("EXEC_DEFAULT", True,
-                                 value=(self.scale_factor, 1, 1),
-                                 # orient_type='GLOBAL',
-                                 # orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL',
-                                 # constraint_axis=(True, False, False), mirror=False, use_proportional_edit=False,
-                                 # proportional_edit_falloff='SMOOTH', proportional_size=300,
-                                 # use_proportional_connected=False, use_proportional_projected=False, snap=True,
-                                 # snap_elements={'VERTEX'}, use_snap_project=False, snap_target='CLOSEST',
-                                 # use_snap_self=True, use_snap_edit=True, use_snap_nonedit=True,
-                                 # use_snap_selectable=False
-                                 )
+        bpy.ops.transform.resize("EXEC_DEFAULT", True, value=(self.scale_factor, 1, 1))
 
     def select_designate_frame(self, context):
         """选择指定的帧"""
@@ -192,5 +172,6 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
 
     def check(self, context):
         if self.designate_start >= self.designate_end:
-            self.report({"ERROR"}, "指定的帧范围出现错误")
+            self.report({"ERROR"}, "There is an error in the specified frame range")
             return True
+        return False

@@ -2,7 +2,7 @@ from . import ui, preferences, ops, update, res
 
 bl_info = {
     "name": "Storyboard Helper",
-    "author": "niceboat animation、小萌新、JuanZhi、只剩一瓶辣椒酱",
+    "author": "Niceboat Animation、小萌新、JuanZhi、只剩一瓶辣椒酱",
     "version": (1, 0, 3),
     "blender": (4, 3, 0),
     "location": "3DView -> N Panel -> Storyboard",

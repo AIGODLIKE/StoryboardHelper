@@ -79,7 +79,7 @@ class StoryboardRenderPanel(bpy.types.Panel):
     bl_options = set()
 
     def draw(self, context):
-        from ops.render.render_by_timeline_marker import RenderStoryboardByTimelineMarker
+        from ..ops.render.render_by_timeline_marker import RenderStoryboardByTimelineMarker
         pref = get_pref()
 
         column = self.layout.column(align=True)

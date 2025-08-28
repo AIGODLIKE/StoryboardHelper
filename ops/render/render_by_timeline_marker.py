@@ -1,11 +1,9 @@
-import time
-
 import bpy
 
 from ...utils import get_sort_timeline_markers, get_scene_gp_all_frames, get_pref
+from .storyboard import RenderStoryboard
 
-
-class RenderStoryboardByTimelineMarker(bpy.types.Operator):
+class RenderStoryboardByTimelineMarker(bpy.types.Operator,RenderStoryboard):
     bl_idname = "render.render_storyboard_by_timeline_marker"
     bl_label = "Render Storyboard"
     bl_description = "Ctrl: Directly render without previewing"

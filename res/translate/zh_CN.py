@@ -41,4 +41,5 @@ data = {
 
     "Tips: Some attributes will only change during rendering": "Tips: 部分属性在渲染时才会改变",
     "Folder split by \\": "文件夹需要以\\拆分",
+    "Cancel rendering":"取消渲染",
 }

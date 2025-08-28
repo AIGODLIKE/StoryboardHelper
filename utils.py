@@ -46,3 +46,16 @@ def get_scene_gp_all_frames(context: bpy.types.Context) -> "list[int]":
                     frames.add(frame.frame_number)
 
     return sorted(list(frames))
+
+def get_scene_all_frames(context: bpy.types.Context) -> "list[int]":
+    frames = set()
+
+    for obj in context.scene.objects:
+        is_show = (obj.hide_viewport is False) and (obj.hide_get() is False)
+
+        if is_show and obj.type in ("GREASEPENCIL", "GPENCIL") and obj.data:
+            for layer in obj.data.layers:
+                for frame in layer.frames:
+                    frames.add(frame.frame_number)
+
+    return sorted(list(frames))

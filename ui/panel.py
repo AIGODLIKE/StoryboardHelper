@@ -59,11 +59,9 @@ class StoryboardFCurvesPanel(bpy.types.Panel):
     bl_category = "Storyboard"
     bl_options = set()
 
-    # "FCURVES"
     # not found in (
     # 'WINDOW', 'HEADER', 'CHANNELS', 'TEMPORARY', 'UI', 'TOOLS', 'TOOL_PROPS', 'ASSET_SHELF', 'ASSET_SHELF_HEADER',
     # 'PREVIEW', 'HUD', 'NAVIGATION_BAR', 'EXECUTE', 'FOOTER', 'TOOL_HEADER', 'XR')
-    # bpy.context.area.ui_type = 'FCURVES'
     def draw(self, context):
         from ..ops.scale_f_curves import ScaleFCurvesStoryboard
         layout = self.layout
@@ -82,12 +80,15 @@ class StoryboardRenderPanel(bpy.types.Panel):
 
     def draw(self, context):
         from ..ops.render.render_by_timeline_marker import RenderStoryboardByTimelineMarker
+        from ..ops.render.render_by_frame import RenderStoryboardByFrame
         pref = get_pref()
 
         column = self.layout.column(align=True)
         column.prop(context.scene.render, "filepath")
         column.prop(pref, "delay")
-        column.operator(RenderStoryboardByTimelineMarker.bl_idname, icon="RENDER_ANIMATION")
+        row = column.row(align=True)
+        row.operator(RenderStoryboardByFrame.bl_idname, icon="KEYTYPE_KEYFRAME_VEC")
+        row.operator(RenderStoryboardByTimelineMarker.bl_idname, icon="RENDER_ANIMATION")
         column.operator("render.opengl", icon="IMAGE_DATA")
 
 

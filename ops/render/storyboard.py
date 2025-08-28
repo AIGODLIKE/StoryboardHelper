@@ -130,7 +130,7 @@ class RenderStoryboard:
     def modal(self, context, event):
         if event.type in {"RIGHTMOUSE", "ESC"}:
             self.stop(context)
-            self.report({"INFO"}, f"取消渲染")
+            self.report({"INFO"}, f"Cancel rendering")
             return {"CANCELLED"}
 
         if event.type == "TIMER":

@@ -84,7 +84,7 @@ class RenderStoryboard:
 
         box_column = column.box().column(align=True)
 
-        box_column.label(text="文件夹需要以\\拆分")
+        box_column.label(text="Folder split by \\")
         for text, prop in {
             "文件夹 -> $FOLDER -> 渲染输出的文件夹": "enabled_folder",
             "场景 -> $SCENE -> 场景名称": "enabled_scene",

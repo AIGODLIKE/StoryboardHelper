@@ -77,6 +77,18 @@ class ScaleFCurvesStoryboard(bpy.types.Operator):
     designate_start: bpy.props.IntProperty(name="Start", default=0)
     designate_end: bpy.props.IntProperty(name="End", default=0)
 
+    @classmethod
+    def poll(cls, context):
+        area = context.area
+        if area and area.type == "GRAPH_EDITOR" and area.ui_type == "FCURVES":
+            if getattr(context, "active_editable_fcurve", None):
+                return True
+            if getattr(context, "selected_editable_fcurves", None):
+                return True
+            if getattr(context, "editable_fcurves", None):
+                return True
+        return False
+
     def draw(self, context):
         from bl_ui.space_dopesheet import dopesheet_filter
 

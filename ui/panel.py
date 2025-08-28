@@ -67,7 +67,9 @@ class StoryboardFCurvesPanel(bpy.types.Panel):
     def draw(self, context):
         from ..ops.scale_f_curves import ScaleFCurvesStoryboard
         layout = self.layout
-        ops = layout.operator(ScaleFCurvesStoryboard.bl_idname)
+        layout.operator(ScaleFCurvesStoryboard.bl_idname)
+        # for i in dir(context):
+        #     layout.label(text=i)
 
 
 class StoryboardRenderPanel(bpy.types.Panel):

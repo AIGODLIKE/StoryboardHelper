@@ -6,10 +6,17 @@ from bpy.app.translations import pgettext_iface
 from .by_frame import ByFrame
 from .by_storyboard import ByStoryboard
 from .by_timelines_markers import ByTimelinesMarkers
-from ...utils import get_pref
+from .render_output_path import RenderOutputPath
+from ...utils import get_pref, is_zh
 
 
-class RenderStoryboard(bpy.types.Operator, ByStoryboard, ByFrame, ByTimelinesMarkers):
+class RenderStoryboard(
+    bpy.types.Operator,
+    ByFrame,
+    ByStoryboard,
+    ByTimelinesMarkers,
+    RenderOutputPath,
+):
     bl_idname = "render.render_storyboard"
     bl_label = "Render Storyboard"
     # bl_description = "Ctrl: Directly render without previewing"
@@ -26,7 +33,8 @@ class RenderStoryboard(bpy.types.Operator, ByStoryboard, ByFrame, ByTimelinesMar
         items=[
             ("REPLACE", "Replace", ""),
             ("SELECT_REPLACE", "Select Replace", ""),
-        ]
+        ],
+        default="REPLACE",
     )
 
     def update_storyboard_mode(self, context):
@@ -40,7 +48,7 @@ class RenderStoryboard(bpy.types.Operator, ByStoryboard, ByFrame, ByTimelinesMar
         ("BY_TIMELINES_MARKERS", "Timelines markers", ""),
     ],
         default="BY_TIMELINES_MARKERS",
-        update=lambda self, context: self.update_storyboard_mode(context)
+        update=update_storyboard_mode
     )
 
     def invoke(self, context, event):
@@ -52,7 +60,7 @@ class RenderStoryboard(bpy.types.Operator, ByStoryboard, ByFrame, ByTimelinesMar
     def modal(self, context, event):
         if event.type in {"RIGHTMOUSE", "ESC"}:
             self.exit(context)
-            self.report({"INFO"}, f"Cancel rendering")
+            self.report({"INFO"}, "Cancel rendering")
             return {"CANCELLED"}
 
         if event.type == "TIMER":
@@ -111,13 +119,18 @@ class RenderStoryboard(bpy.types.Operator, ByStoryboard, ByFrame, ByTimelinesMar
     def draw(self, context):
         column = self.layout.column(align=True)
         column.operator_context = "EXEC_DEFAULT"
-        column.prop(self, "preview_count")
 
-        column.row().prop(self, "storyboard_mode", expand=True)
-        column.row().prop(self, "replace_mode", expand=True)
+        is_show_zh = is_zh() and context.preferences.view.use_translate_interface
+        factor = .1 if is_show_zh else .2
+        split = column.split(factor=factor)
+        split.label(text="Render frame:")
+        split.row().prop(self, "storyboard_mode", expand=True)
+        column.separator()
 
+        self.draw_output_path(context, column)
         for index, frame in enumerate(self.render_data.keys()):
             if index >= self.preview_count:
                 break
             row = column.row(align=True)
             row.label(text=str(self.get_out_file_path(context, frame)))
+        # column.prop(self, "preview_count")

@@ -1,6 +1,7 @@
 import os
 
 import bpy
+from bpy.app.translations import pgettext_iface
 
 from ...utils import get_pref, is_zh
 
@@ -14,7 +15,7 @@ class RenderOutputPath:
     enabled_file_suffix: bpy.props.BoolProperty(default=True)
     enabled_camera: bpy.props.BoolProperty(default=True)
     enabled_nb_tm_format: bpy.props.BoolProperty(default=True)
-    expand_path: bpy.props.BoolProperty(default=True)
+    expand_path: bpy.props.BoolProperty(default=False)
 
     def get_out_file_path(self, context: bpy.types.Context, frame: int):
         pref = get_pref()
@@ -73,29 +74,60 @@ class RenderOutputPath:
         scene = context.scene
         camera = context.scene.camera.name
 
-        column = layout.column(align=True)
-        column.prop(self, "expand_path", text="Folder split by \\" if self.expand_path else "Path")
-        column = layout.column(align=True)
+        text = "Folder split by \\" if self.expand_path else "Path format"
+        box = layout.box()
+        split = box.split(factor=0.9)
+        split.alignment = "LEFT"
+        row = split.row(align=True)
+        row.prop(self, "expand_path", text=text, emboss=False)
+        row.separator()
+        row.prop(self, "expand_path", text="", emboss=False)
+        split.prop(self, "expand_path",
+                   text="",
+                   icon="DOWNARROW_HLT" if self.expand_path else "RIGHTARROW",
+                   emboss=False)
 
-        for a, b, text, prop, value in [
-            ("文件夹", "$FOLDER", "Folder for rendering output", "enabled_folder", folder),
-            ("场景", "$SCENE", "Scene name", "enabled_scene", scene.name),
-            ("视图层", "$VIEW_LAYER", "View layer name", "enabled_view_layer", view_layer),
-            ("格式", "$NB_TM_FORMAT", "F_560_01，F_560_02", "enabled_nb_tm_format", "F_560_02"),
-            ("帧", "$FRAME_INT", "Frame int 1,2", "enabled_frame", str(frame)),
-            ("填充帧", "$FRAME", "Fill 1 -> 0001,2 -> 0002", "enabled_frame_int", frame_str),
-            ("后缀", "$FILE_SUFFIX", "Output file suffix", "enabled_file_suffix", suffix),
-            ("相机", "$CAMERA", "Current camera name", "enabled_camera", camera),
-        ]:
-            row = column.row(align=True)
-            row.label(text=text)
-            if is_zh() and context.preferences.view.use_translate_interface:
-                row.label(text=a)
-                row.separator()
-            row.label(text=b)
-            row.label(text=value)
-            if getattr(self, "name_mode", None) == "SELECT_REPLACE":
-                row.prop(self, prop, text="")
+        is_show_zh = is_zh() and context.preferences.view.use_translate_interface
+        factor = 0.3 if is_show_zh else 0.4
+        is_select_replace = getattr(self, "replace_mode", None) == "SELECT_REPLACE"
+        box = layout.box()
+        if self.expand_path:
+            split = box.split(factor=factor)
+            split.label(text="Explanation")
 
-        layout.label(text="Tips: Some attributes will only change during rendering")
-        layout.prop(get_pref(), "output_file_format")
+            row = split.row(align=True)
+            row.label(text="Replace format")
+            row.label(text="Replace value")
+            if is_select_replace:
+                row.label(text="Enabled")
+
+            for ci, ei, info, prop, value in [
+                ("文件夹", "$FOLDER", "Folder for rendering output", "enabled_folder", folder),
+                ("场景", "$SCENE", "Scene name", "enabled_scene", scene.name),
+                ("视图层", "$VIEW_LAYER", "View layer name", "enabled_view_layer", view_layer),
+                ("格式", "$NB_TM_FORMAT", "F_560_01，F_560_02", "enabled_nb_tm_format", "F_560_02"),
+                ("帧", "$FRAME_INT", "Frame int 1,2", "enabled_frame", str(frame)),
+                ("填充帧", "$FRAME", "Fill 1->0001,2->0002", "enabled_frame_int", frame_str),
+                ("后缀", "$FILE_SUFFIX", "Output file suffix", "enabled_file_suffix", suffix),
+                ("相机", "$CAMERA", "Current camera name", "enabled_camera", camera),
+            ]:
+                split = box.split(factor=factor)
+                split.label(text=info)
+
+                row = split.row(align=True)
+                format_list = []
+                if is_show_zh:
+                    format_list.append(ci)
+                format_list.append(ei)
+                row.label(text=pgettext_iface(" or ").join(format_list))
+                row.label(text=value)
+                if is_select_replace:
+                    row.prop(self, prop, text="")
+
+            box.separator()
+            box.label(text="Tips: Some attributes will only change during rendering")
+            box.separator()
+            split = box.split(factor=factor)
+            split.label(text="Replace mode:")
+            split.row().prop(self, "replace_mode", expand=True)
+        box.prop(get_pref(), "output_file_format")

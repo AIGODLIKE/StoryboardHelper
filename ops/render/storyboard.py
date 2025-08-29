@@ -7,13 +7,11 @@ from ...utils import get_pref
 
 
 class RenderStoryboard:
-    frames = []
-
     timer = None
     start_time = None
 
     render_data = {}  # {frame:out_name}
-    data = {}  # store data for restore
+    store_data = {}  # store scene data for restore
 
     preview_count: bpy.props.IntProperty(name="Preview Count", default=10, min=2, max=666, soft_max=20)
 
@@ -30,6 +28,7 @@ class RenderStoryboard:
     enabled_frame_int: bpy.props.BoolProperty(default=True)
     enabled_file_suffix: bpy.props.BoolProperty(default=True)
     enabled_camera: bpy.props.BoolProperty(default=True)
+    enabled_nb_tm_format: bpy.props.BoolProperty(default=True)
 
     def start(self, context, event):
         ...
@@ -63,6 +62,9 @@ class RenderStoryboard:
             if self.enabled_camera is False:
                 file_format = file_format.replace("$CAMERA", "").replace("相机", "")
 
+            if self.enabled_nb_tm_format is False:
+                file_format = file_format.replace("$NB_TM_FORMAT", "").replace("格式", "")
+        nb = self.render_data[frame]
         return (file_format
                 .replace("$FOLDER", folder).replace("文件夹", folder)
                 .replace("$SCENE", scene.name).replace("场景", scene.name)
@@ -71,6 +73,7 @@ class RenderStoryboard:
                 .replace("$FRAME_INT", str(frame)).replace("帧", str(frame))
                 .replace("$FILE_SUFFIX", suffix).replace("后缀", suffix)
                 .replace("$CAMERA", camera).replace("相机", camera)
+                .replace("$NB_TM_FORMAT", nb).replace("格式", nb)
                 )
 
     def draw(self, context):
@@ -109,9 +112,7 @@ class RenderStoryboard:
             row.label(text=str(self.get_out_file_path(context, frame)))
 
     def invoke(self, context, event):
-        self.frames = []
         self.start_time = time.time()
-        self.start_data(context)
         self.render_data = {}
         if res := self.start(context, event):
             return res
@@ -122,6 +123,7 @@ class RenderStoryboard:
         if not hasattr(self, "start_time"):
             return {"CANCELLED"}
 
+        self.start_data(context)
         wm = context.window_manager
         self.timer = wm.event_timer_add(pref.delay, window=context.window)
         wm.modal_handler_add(self)
@@ -166,7 +168,7 @@ class RenderStoryboard:
         self.restore_date(context)
 
     def start_data(self, context):
-        self.data = {
+        self.store_data = {
             "frame": context.scene.frame_current,
             "file_path": context.scene.render.filepath,
             "show_overlays": context.space_data.overlay.show_overlays
@@ -174,6 +176,6 @@ class RenderStoryboard:
         context.space_data.overlay.show_overlays = False
 
     def restore_date(self, context):
-        context.scene.frame_set(self.data["frame"])
-        context.space_data.overlay.show_overlays = self.data["show_overlays"]
-        context.scene.render.filepath = self.data["file_path"]
+        context.scene.frame_set(self.store_data["frame"])
+        context.space_data.overlay.show_overlays = self.store_data["show_overlays"]
+        context.scene.render.filepath = self.store_data["file_path"]

@@ -80,16 +80,14 @@ class StoryboardRenderPanel(bpy.types.Panel):
 
     def draw(self, context):
         from ..ops.render.render_by_timeline_marker import RenderStoryboardByTimelineMarker
-        from ..ops.render.render_by_frame import RenderStoryboardByFrame
         pref = get_pref()
 
         column = self.layout.column(align=True)
         column.prop(context.scene.render, "filepath")
+        column.separator()
         column.prop(pref, "delay")
-        row = column.row(align=True)
-        row.operator(RenderStoryboardByFrame.bl_idname, icon="KEYTYPE_KEYFRAME_VEC")
-        row.operator(RenderStoryboardByTimelineMarker.bl_idname, icon="RENDER_ANIMATION")
         column.operator("render.opengl", icon="IMAGE_DATA")
+        column.operator(RenderStoryboardByTimelineMarker.bl_idname, icon="RENDER_ANIMATION")
 
 
 panel_list = [

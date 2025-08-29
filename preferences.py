@@ -29,14 +29,11 @@ class StoryboardPreferences(bpy.types.AddonPreferences):
     )
 
     def draw(self, context):
-        column = self.layout.column(align=True)
+        column = self.layout.column(align=False)
         column.prop(self, "panel_name")
         column.separator()
-        column.prop(self, "sync_timeline_markers_frame")
-        column.prop(self, "sync_timeline_markers_select")
-        column.separator()
-        column.prop(self, "delay")
         column.prop(self, "output_file_format")
+        column.prop(self, "delay")
 
 
 def register():

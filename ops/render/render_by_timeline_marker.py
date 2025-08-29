@@ -1,45 +1,15 @@
 import bpy
 
-from ...utils import get_sort_timeline_markers, get_scene_gp_all_frames, get_pref
 from .storyboard import RenderStoryboard
+from ...utils import get_sort_timeline_markers, get_scene_gp_all_frames
 
-class RenderStoryboardByTimelineMarker(bpy.types.Operator,RenderStoryboard):
-    bl_idname = "render.render_storyboard_by_timeline_marker"
+
+class RenderStoryboardByTimelineMarker(bpy.types.Operator, RenderStoryboard):
+    bl_idname = "render.render_storyboard"
     bl_label = "Render Storyboard"
-    bl_description = "Ctrl: Directly render without previewing"
+    # bl_description = "Ctrl: Directly render without previewing"
 
     markers_dict = {}
-
-    enabled_nb_tm_format: bpy.props.BoolProperty(default=True)
-
-    def get_out_file_path(self, context: bpy.types.Context, frame: int):
-        file_format = super().output_file_format
-        if self.enabled_nb_tm_format is False:
-            file_format = file_format.replace("$NB_TM_FORMAT", "").replace("格式", "")
-        nb = self.render_data[frame]
-        return file_format.replace("$NB_TM_FORMAT", nb).replace("格式", nb)
-
-    def check_timeline_markers_not_match(self) -> bool:
-        miss_list = []
-        print("check_timeline_markers_not_match", self.markers_dict)
-
-        if len(self.markers_dict) == 0:
-            self.report({"ERROR"}, "Time stamp not found")
-            return True
-        elif len(self.frames) == 0:
-            self.report({"ERROR"}, "No frames found for rendering")
-            return True
-
-        for mark_frame in self.markers_dict.keys():
-            if mark_frame not in self.frames:
-                miss_list.append(self.markers_dict[mark_frame])
-        is_error = len(miss_list) != 0
-
-        if is_error:
-            text = bpy.app.translations.pgettext("Timeline markers are not match %s") % miss_list
-            self.report({"ERROR"}, text)
-
-        return is_error
 
     def init_render_date(self):
         """
@@ -88,13 +58,8 @@ class RenderStoryboardByTimelineMarker(bpy.types.Operator,RenderStoryboard):
     def start(self, context, event):
         self.markers_dict = {m.frame: m.name for m in get_sort_timeline_markers(context)}
         self.frames = get_scene_gp_all_frames(context)
-
-        if self.check_timeline_markers_not_match():
-            self.restore_date(context)
-            return {"CANCELLED"}
         print("self.frames：", len(self.frames), "self.markers", len(self.markers_dict))
         self.init_render_date()
         print("self.render_data", self.render_data)
         if event.ctrl:
             return self.execute(context)
-

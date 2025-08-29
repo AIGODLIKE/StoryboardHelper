@@ -41,5 +41,19 @@ data = {
 
     "Tips: Some attributes will only change during rendering": "Tips: 部分属性在渲染时才会改变",
     "Folder split by \\": "文件夹需要以\\拆分",
-    "Cancel rendering":"取消渲染",
+    "Cancel rendering": "取消渲染",
+
+    "By Frame": "按帧",
+    "By Storyboard": "按故事板",
+    "By Timelines markers": "按时间线标记",
+    "Folder for rendering output":"渲染输出的文件夹",
+    "Scene name":"场景名称",
+    "View layer name":"视图层名称",
+    "Frame int 1,2":"整数帧 1,2",
+    "Fill 1 -> 0001,2 -> 0002":"填充 1 -> 0001,2 -> 0002",
+    "Output file suffix":"输出文件后缀",
+    "Current camera name":"当前相机名称",
+
+    "Timelines markers":"时间线标记",
+    "All frame":"所有帧",
 }

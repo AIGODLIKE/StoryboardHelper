@@ -61,3 +61,7 @@ def get_scene_all_frames(context: bpy.types.Context) -> "list[int]":
             #     for fc in obj.animation_data.action.fcurves:
             #         ...
     return sorted(list(frames))
+
+def is_zh() -> bool:
+    view = bpy.context.preferences.view
+    return view.use_translate_interface and view.language in ("zh_HANS", "zh_CN")

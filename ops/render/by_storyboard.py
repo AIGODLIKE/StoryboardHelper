@@ -1,14 +1,7 @@
-import bpy
-
-from .storyboard import RenderStoryboard
 from ...utils import get_sort_timeline_markers, get_scene_gp_all_frames
 
 
-class RenderStoryboardByTimelineMarker(bpy.types.Operator, RenderStoryboard):
-    bl_idname = "render.render_storyboard"
-    bl_label = "Render Storyboard"
-    # bl_description = "Ctrl: Directly render without previewing"
-
+class ByStoryboard:
     markers_dict = {}
 
     def init_render_date(self):
@@ -55,11 +48,12 @@ class RenderStoryboardByTimelineMarker(bpy.types.Operator, RenderStoryboard):
             if not self.frames:
                 return
 
-    def start(self, context, event):
+    def start_by_storyboard(self, context):
         self.markers_dict = {m.frame: m.name for m in get_sort_timeline_markers(context)}
         self.frames = get_scene_gp_all_frames(context)
         print("self.frames：", len(self.frames), "self.markers", len(self.markers_dict))
         self.init_render_date()
         print("self.render_data", self.render_data)
-        if event.ctrl:
-            return self.execute(context)
+
+    def update_by_storyboard(self,context):
+        ...

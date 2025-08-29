@@ -97,7 +97,7 @@ class RenderOutputPath:
 
             row = split.row(align=True)
             row.label(text="Replace format")
-            row.label(text="Replace value")
+            row.label(text="Preview value")
             if is_select_replace:
                 row.label(text="Enabled")
 

@@ -7,7 +7,7 @@ from .by_frame import ByFrame
 from .by_storyboard import ByStoryboard
 from .by_timelines_markers import ByTimelinesMarkers
 from .render_output_path import RenderOutputPath
-from ...utils import get_pref, is_zh
+from ...utils import get_pref, is_zh, get_sort_timeline_markers, get_fill_frame
 
 
 class RenderStoryboard(
@@ -19,12 +19,12 @@ class RenderStoryboard(
 ):
     bl_idname = "render.render_storyboard"
     bl_label = "Render Storyboard"
+
     # bl_description = "Ctrl: Directly render without previewing"
 
     timer = None
     start_time = None
 
-    render_data = {}  # {frame:out_name}
     store_data = {}  # store scene data for restore
 
     preview_count: bpy.props.IntProperty(name="Preview Count", default=10, min=2, max=666, soft_max=20)
@@ -37,24 +37,28 @@ class RenderStoryboard(
         default="REPLACE",
     )
 
-    def update_storyboard_mode(self, context):
-        identity = f"update_{self.storyboard_mode.lower()}"
-        print("update_storyboard_mode", identity)
-        getattr(self, identity)(context)
-
     storyboard_mode: bpy.props.EnumProperty(items=[
         ("BY_FRAME", "All frame", ""),
         # ("BY_STORYBOARD", "Storyboard", ""),
         ("BY_TIMELINES_MARKERS", "Timelines markers", ""),
     ],
         default="BY_TIMELINES_MARKERS",
-        update=update_storyboard_mode
     )
+
+    @property
+    def render_data(self) -> dict:  # {frame:out_name}
+        if self.storyboard_mode == "BY_FRAME":
+            return self.by_frame
+        elif self.storyboard_mode == "BY_STORYBOARD":
+            return self.by_storyboard
+        elif self.storyboard_mode == "BY_TIMELINES_MARKERS":
+            return self.by_timelines_markers
+        return {}
 
     def invoke(self, context, event):
         self.start_time = time.time()
-        self.render_data = {}
-        self.update_storyboard_mode(context)
+        self.update_by_frame(context)
+        self.update_by_timelines_markers(context)
         return context.window_manager.invoke_props_dialog(self, width=500)
 
     def modal(self, context, event):

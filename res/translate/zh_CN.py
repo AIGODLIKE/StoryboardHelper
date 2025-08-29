@@ -62,6 +62,7 @@ data = {
     "Replace mode:": "替换模式:",
     "Replace format": "替换格式",
     "Replace value": "替换值",
+    "Preview value": "预览值",
     "Explanation": "解释",
     " or ": " 或 ",
     "Path format": "路径格式",

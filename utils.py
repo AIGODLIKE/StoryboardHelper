@@ -3,7 +3,7 @@ import re
 
 import bpy
 
-
+import os
 def get_pref():
     return bpy.context.preferences.addons[__package__].preferences
 
@@ -25,6 +25,11 @@ def get_sort_timeline_markers(context: bpy.types.Context) -> list:
     """ERROR 排序出现错误"""
     return sorted(context.scene.timeline_markers, key=lambda m: m.frame)
 
+
+def get_fill_frame(context, frame: int) -> str:
+    out_path = context.scene.render.frame_path(frame=frame)
+    frame_str, suffix = os.path.basename(out_path).split(".")
+    return frame_str
 
 def get_active_timeline_marker(context: bpy.types.Context) -> "bpy.types.TimelineMarker|None":
     index = get_pref().timeline_markers_index

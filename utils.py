@@ -1,9 +1,10 @@
 import ast
+import os
 import re
 
 import bpy
 
-import os
+
 def get_pref():
     return bpy.context.preferences.addons[__package__].preferences
 
@@ -31,6 +32,7 @@ def get_fill_frame(context, frame: int) -> str:
     frame_str, suffix = os.path.basename(out_path).split(".")
     return frame_str
 
+
 def get_active_timeline_marker(context: bpy.types.Context) -> "bpy.types.TimelineMarker|None":
     index = get_pref().timeline_markers_index
     scene = context.scene
@@ -39,7 +41,7 @@ def get_active_timeline_marker(context: bpy.types.Context) -> "bpy.types.Timelin
     return None
 
 
-def get_scene_gp_all_frames(context: bpy.types.Context) -> "list[int]":
+def get_gp_frames_by_layers(context: bpy.types.Context) -> "list[int]":
     frames = set()
 
     for obj in context.scene.objects:
@@ -51,12 +53,15 @@ def get_scene_gp_all_frames(context: bpy.types.Context) -> "list[int]":
                     frames.add(frame.frame_number)
     return sorted(list(frames))
 
+
+def get_all_gp_frames(context: bpy.types.Context) -> "list[int]":
+    return get_frames(context, containing_types=("GREASEPENCIL", "GPENCIL"))
+
+
 def get_scene_all_frames(context: bpy.types.Context) -> "list[int]":
     frames = set()
-
     for obj in context.scene.objects:
         is_show = (obj.hide_viewport is False) and (obj.hide_get() is False)
-
         if is_show:
             if obj.type in ("GREASEPENCIL", "GPENCIL"):
                 for layer in obj.data.layers:
@@ -67,6 +72,47 @@ def get_scene_all_frames(context: bpy.types.Context) -> "list[int]":
             #         ...
     return sorted(list(frames))
 
+
 def is_zh() -> bool:
     view = bpy.context.preferences.view
     return view.use_translate_interface and view.language in ("zh_HANS", "zh_CN")
+
+
+def get_frames(context: bpy.types.Context, containing_types=None):
+    frames = set()
+
+    def get_frame(c_f):
+        sort_frame = sorted(c_f.keyframe_points, key=lambda k: k.co_ui[0])
+        for index, keyframe in enumerate(sort_frame):
+            x, y = keyframe.co_ui
+            ix = int(x)
+            if (ix - x) == 0:
+                frames.add(ix)
+
+    for_all_action(context, get_frame, containing_types=containing_types)
+    return sorted(list(frames))
+
+
+def for_all_action(context, func, containing_types=None) -> int:
+    count = 0
+    ok_set = set()
+    for obj in context.scene.objects:
+        if containing_types and obj.type not in containing_types:  # 过滤类型
+            continue
+        anim = obj.animation_data
+        if anim:
+            action = obj.animation_data.action
+            if action:
+                for f_c in action.fcurves:
+                    func(f_c)
+                    ok_set.add(f_c)
+                    count += 1
+                if action.groups:
+                    for g in action.groups:
+                        g.lock = False
+                        for f_c in g.channels:
+                            func(f_c)
+                            ok_set.add(f_c)
+                            count += 1
+                action.update_tag()
+    return count

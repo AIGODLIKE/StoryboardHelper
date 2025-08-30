@@ -7,7 +7,7 @@ from .by_frame import ByFrame
 from .by_storyboard import ByStoryboard
 from .by_timelines_markers import ByTimelinesMarkers
 from .render_output_path import RenderOutputPath
-from ...utils import get_pref, is_zh, get_sort_timeline_markers, get_fill_frame
+from ...utils import get_pref, is_zh
 
 
 class RenderStoryboard(
@@ -27,7 +27,7 @@ class RenderStoryboard(
 
     store_data = {}  # store scene data for restore
 
-    preview_count: bpy.props.IntProperty(name="Preview Count", default=10, min=2, max=666, soft_max=20)
+    preview_count: bpy.props.IntProperty(name="Preview Count", default=5, min=2, max=30, soft_max=20)
 
     replace_mode: bpy.props.EnumProperty(
         items=[
@@ -39,7 +39,7 @@ class RenderStoryboard(
 
     storyboard_mode: bpy.props.EnumProperty(items=[
         ("BY_FRAME", "All frame", ""),
-        # ("BY_STORYBOARD", "Storyboard", ""),
+        ("BY_STORYBOARD", "Storyboard", ""),
         ("BY_TIMELINES_MARKERS", "Timelines markers", ""),
     ],
         default="BY_TIMELINES_MARKERS",
@@ -48,7 +48,12 @@ class RenderStoryboard(
     @property
     def render_data(self) -> dict:  # {frame:out_name}
         if self.storyboard_mode == "BY_FRAME":
-            return self.by_frame
+            bm = self.by_frame_mode
+            if bm == "GP":
+                return self.gp_frames
+            elif bm == "AN":
+                return self.an_frames
+            return self.all_frames
         elif self.storyboard_mode == "BY_STORYBOARD":
             return self.by_storyboard
         elif self.storyboard_mode == "BY_TIMELINES_MARKERS":
@@ -59,7 +64,9 @@ class RenderStoryboard(
         self.start_time = time.time()
         self.update_by_frame(context)
         self.update_by_timelines_markers(context)
-        return context.window_manager.invoke_props_dialog(self, width=500)
+        self.update_by_storyboard(context)
+        pref = get_pref()
+        return context.window_manager.invoke_props_dialog(self, width=pref.render_width)
 
     def modal(self, context, event):
         if event.type in {"RIGHTMOUSE", "ESC"}:
@@ -129,12 +136,31 @@ class RenderStoryboard(
         split = column.split(factor=factor)
         split.label(text="Render frame:")
         split.row().prop(self, "storyboard_mode", expand=True)
+        getattr(self, f"draw_{self.storyboard_mode.lower()}")(context, column)
         column.separator()
-
         self.draw_output_path(context, column)
-        for index, frame in enumerate(self.render_data.keys()):
+        self.preview_render(context, column)
+
+    def preview_render(self, context, layout):
+        column = layout.column(align=True)
+        output_paths = self.render_data.keys()
+        preview_count = self.preview_count
+        folding_count = len(output_paths) - preview_count
+
+        if folding_count > 0:
+            column.prop(self, "preview_count")
+
+        for index, frame in enumerate(output_paths):
             if index >= self.preview_count:
                 break
             row = column.row(align=True)
             row.label(text=str(self.get_out_file_path(context, frame)))
-        # column.prop(self, "preview_count")
+        if folding_count > 0:
+            row = column.row(align=True)
+            row.label(text=f"{folding_count}...")
+        if len(output_paths) == 0:
+            cc = column.column()
+            cc.alert = True
+            cc.label(text="No frames found for rendering")
+            if self.storyboard_mode != "BY_FRAME":
+                cc.label(text="Please add a timeline markers")

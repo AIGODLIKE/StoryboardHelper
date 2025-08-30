@@ -27,6 +27,7 @@ class StoryboardPreferences(bpy.types.AddonPreferences):
         name="Out File Format",
         default=r"$FOLDER\$SCENE\$NB_TM_FORMAT.$FILE_SUFFIX"
     )
+    render_width: bpy.props.IntProperty(name="Render Width", default=600)
 
     def draw(self, context):
         column = self.layout.column(align=False)
@@ -34,6 +35,7 @@ class StoryboardPreferences(bpy.types.AddonPreferences):
         column.separator()
         column.prop(self, "output_file_format")
         column.prop(self, "delay")
+        column.prop(self, "render_width")
 
 
 def register():

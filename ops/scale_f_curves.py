@@ -1,28 +1,7 @@
 import bpy
 from mathutils import Vector
 
-
-def for_all_action(context, func) -> int:
-    count = 0
-    ok_set = set()
-    for obj in context.scene.objects:
-        anim = obj.animation_data
-        if anim:
-            action = obj.animation_data.action
-            if action:
-                for f_c in action.fcurves:
-                    func(f_c)
-                    ok_set.add(f_c)
-                    count += 1
-                if action.groups:
-                    for g in action.groups:
-                        g.lock = False
-                        for f_c in g.channels:
-                            func(f_c)
-                            ok_set.add(f_c)
-                            count += 1
-                action.update_tag()
-    return count
+from ..utils import for_all_action
 
 
 def unlock(context):

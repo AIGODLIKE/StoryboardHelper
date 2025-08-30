@@ -48,7 +48,9 @@ class RenderOutputPath:
 
             if self.enabled_nb_tm_format is False:
                 file_format = file_format.replace("$NB_TM_FORMAT", "").replace("格式", "")
-        nb = getattr(self, "render_data", None)[frame]
+
+        render_data = getattr(self, "render_data", None)
+        nb = render_data[frame] if frame in render_data else frame_str
         return (file_format
                 .replace("$FOLDER", folder).replace("文件夹", folder)
                 .replace("$SCENE", scene.name).replace("场景", scene.name)
@@ -101,11 +103,15 @@ class RenderOutputPath:
             if is_select_replace:
                 row.label(text="Enabled")
 
+
+            render_data = getattr(self, "render_data", None)
+            nb = render_data[frame] if frame in render_data else frame_str
+
             for ci, ei, info, prop, value in [
                 ("文件夹", "$FOLDER", "Folder for rendering output", "enabled_folder", folder),
                 ("场景", "$SCENE", "Scene name", "enabled_scene", scene.name),
                 ("视图层", "$VIEW_LAYER", "View layer name", "enabled_view_layer", view_layer),
-                ("格式", "$NB_TM_FORMAT", "F_560_01，F_560_02", "enabled_nb_tm_format", "F_560_02"),
+                ("格式", "$NB_TM_FORMAT", "F_560_01，F_560_02", "enabled_nb_tm_format", nb),
                 ("帧", "$FRAME_INT", "Frame int 1,2", "enabled_frame", str(frame)),
                 ("填充帧", "$FRAME", "Fill 1->0001,2->0002", "enabled_frame_int", frame_str),
                 ("后缀", "$FILE_SUFFIX", "Output file suffix", "enabled_file_suffix", suffix),

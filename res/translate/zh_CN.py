@@ -66,4 +66,9 @@ data = {
     "Explanation": "解释",
     " or ": " 或 ",
     "Path format": "路径格式",
+    "3DView -> N Panel -> Storyboard": "3D视图 -> N面板 -> 故事板",
+    "Only GP Frame": "仅蜡笔帧",
+    "Start frame..End frame": "开始帧..结束帧",
+    "Only Animation Frame": "仅动画帧",
+    "Please add a timeline markers": "请添加时间线标记"
 }

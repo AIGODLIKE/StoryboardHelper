@@ -12,7 +12,7 @@ class StoryboardTimelineMarkerPanel(bpy.types.Panel):
     bl_options = set()
 
     def draw(self, context):
-        from .ui_list import Storyboard_ULList
+        from .ui_list import StoryboardULList
         from ..ops.crud import AddTimelineMarker, DeleteTimelineMarker, RenameTimelineMarkers
         from ..ops.rename import WM_OT_batch_rename
 
@@ -22,7 +22,7 @@ class StoryboardTimelineMarkerPanel(bpy.types.Panel):
 
         row = column.row(align=True)
         row.template_list(
-            Storyboard_ULList.bl_idname, "",
+            StoryboardULList.bl_idname, "",
             context.scene, "timeline_markers",
             pref, "timeline_markers_index"
         )

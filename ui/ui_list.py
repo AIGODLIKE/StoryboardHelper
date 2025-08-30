@@ -1,7 +1,7 @@
 import bpy
 
 
-class Storyboard_ULList(bpy.types.UIList):
+class StoryboardULList(bpy.types.UIList):
     bl_idname = "STORYBOARD_UL_LIST"
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
@@ -19,7 +19,7 @@ class Storyboard_ULList(bpy.types.UIList):
 
 
 ui_list = [
-    Storyboard_ULList,
+    StoryboardULList,
 ]
 
 register, unregister = bpy.utils.register_classes_factory(ui_list)

@@ -55,7 +55,7 @@ def get_gp_frames_by_layers(context: bpy.types.Context) -> "list[int]":
 
 
 def get_all_gp_frames(context: bpy.types.Context) -> "list[int]":
-    return get_frames(context, containing_types=("GREASEPENCIL", "GPENCIL"))
+    return get_frames_by_f_curves(context, containing_types=("GREASEPENCIL", "GPENCIL"))
 
 
 def get_scene_all_frames(context: bpy.types.Context) -> "list[int]":
@@ -78,7 +78,7 @@ def is_zh() -> bool:
     return view.use_translate_interface and view.language in ("zh_HANS", "zh_CN")
 
 
-def get_frames(context: bpy.types.Context, containing_types=None):
+def get_frames_by_f_curves(context: bpy.types.Context, containing_types=None):
     frames = set()
 
     def get_frame(c_f):

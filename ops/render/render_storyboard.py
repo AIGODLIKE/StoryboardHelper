@@ -38,7 +38,7 @@ class RenderStoryboard(
     )
 
     storyboard_mode: bpy.props.EnumProperty(items=[
-        ("BY_FRAME", "All frame", ""),
+        ("BY_FRAME", "Keyframe", ""),
         ("BY_STORYBOARD", "Storyboard", ""),
         ("BY_TIMELINES_MARKERS", "Timelines markers", ""),
     ],

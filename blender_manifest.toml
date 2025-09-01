@@ -7,5 +7,5 @@ maintainer = "Niceboat Animation、小萌新、JuanZhi、只剩一瓶辣椒酱"
 name = "Storyboard Helper"
 tagline = "Storyboard Helper"
 type = "add-on"
-version = "1.0.5"
+version = "1.0.6"
 tags = ["3D View", "Modeling", "Mesh", "Object"]

@@ -53,6 +53,9 @@ class RenderStoryboard(
                 return self.gp_frames
             elif bm == "AN":
                 return self.an_frames
+            elif bm == "CUSTOM":
+                is_ok, frames = self.parse_custom_frame
+                return frames
             return self.all_frames
         elif self.storyboard_mode == "BY_STORYBOARD":
             return self.by_storyboard

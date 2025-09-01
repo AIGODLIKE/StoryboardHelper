@@ -73,4 +73,6 @@ data = {
     "Please add a timeline markers": "请添加时间线标记",
     "Clear timeline marker %s": "清理时间线标记 %s",
     "Clear Timeline Marker": "清理时间线标记",
+    "Custom Frame": "自定义帧",
+    "5..8 : 5,6,7,8 Frame": "5..8 : 5,6,7,8 帧",
 }

@@ -13,8 +13,8 @@ class StoryboardTimelineMarkerPanel(bpy.types.Panel):
 
     def draw(self, context):
         from .ui_list import StoryboardULList
+        from .menu import StoryboardMenu
         from ..ops.crud import AddTimelineMarker, DeleteTimelineMarker, RenameTimelineMarkers
-        from ..ops.rename import WM_OT_batch_rename
 
         pref = get_pref()
 
@@ -29,16 +29,12 @@ class StoryboardTimelineMarkerPanel(bpy.types.Panel):
         sub_column = row.column(align=True)
         sub_column.operator(AddTimelineMarker.bl_idname, icon="ADD", text="")
         sub_column.operator(DeleteTimelineMarker.bl_idname, icon="REMOVE", text="")
-        sub_column.operator(RenameTimelineMarkers.bl_idname, icon="SORTSIZE", text="")
+        sub_column.menu(StoryboardMenu.bl_idname ,icon='DOWNARROW_HLT', text="")
+
+        sub_column.separator()
         sub_column.prop(pref, "sync_timeline_markers_frame", text="", icon="UV_SYNC_SELECT")
         sub_column.prop(pref, "sync_timeline_markers_select", text="", icon="RESTRICT_SELECT_OFF")
 
-        sub_column.separator()
-        sub_column.operator(
-            WM_OT_batch_rename.bl_idname,
-            text="",
-            icon="SORTALPHA",
-        ).data_type = "TIMELINE_MARKERS"
 
         row = column.row(align=True)
         row.operator("screen.keyframe_jump", text="", icon="PREV_KEYFRAME").next = False

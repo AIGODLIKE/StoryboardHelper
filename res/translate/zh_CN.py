@@ -70,5 +70,7 @@ data = {
     "Only GP Frame": "仅蜡笔帧",
     "Start frame..End frame": "开始帧..结束帧",
     "Only Animation Frame": "仅动画帧",
-    "Please add a timeline markers": "请添加时间线标记"
+    "Please add a timeline markers": "请添加时间线标记",
+    "Clear timeline marker %s": "清理时间线标记 %s",
+    "Clear Timeline Marker": "清理时间线标记",
 }

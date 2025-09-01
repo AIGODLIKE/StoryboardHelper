@@ -22,6 +22,25 @@ class AddTimelineMarker(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class ClearTimelineMarker(bpy.types.Operator):
+    bl_idname = "anim.clear_timeline_marker"
+    bl_label = "Clear Timeline Marker"
+
+    @classmethod
+    def poll(cls, context) -> bool:
+        return len(context.scene.timeline_markers) != 0
+
+    def execute(self, context):
+        count = 0
+        for mark in context.scene.timeline_markers:
+            context.scene.timeline_markers.remove(mark)
+            count += 1
+
+        text = bpy.app.translations.pgettext_iface("Clear timeline marker %s")
+        self.report({"INFO"}, text % count)
+        return {"FINISHED"}
+
+
 class DeleteTimelineMarker(bpy.types.Operator):
     bl_idname = "anim.delete_timeline_marker"
     bl_label = "Delete Timeline Marker"

@@ -1,6 +1,7 @@
-from . import panel, ui_list
+from . import panel, ui_list, menu
 
 modules = [
+    menu,
     panel,
     ui_list
 ]
